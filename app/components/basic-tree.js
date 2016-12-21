@@ -145,8 +145,8 @@ export default Ember.Component.extend({
 
     function transform() {
       return zoomIdentity
-        .translate(60, 0)
-        .scale(0.14);
+        .translate(30, 150)
+        .scale(0.30);
     }
 
     svg.call(zoomHandler.transform, transform());
