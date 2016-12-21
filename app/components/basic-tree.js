@@ -111,15 +111,30 @@ export default Ember.Component.extend({
           return "translate(" + d.y + "," + d.x + ")";
         });
 
-    node.append("circle")
-      .attr("r", 2.5);
+    nodeEnter.append('text')
+      .attr('dy', '-1.1em')
+      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+      .text(d => d.data._id);
 
-    node.append("text")
-      .attr("dy", 3)
-      .attr("x", function(d) { return d.children ? -8 : 8; })
+    nodeEnter.append("text")
+      .attr("dy", '0.1em')
       .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
       .text(function(d) {
         return d.data.id.name;
+      });
+
+    nodeEnter.append("text")
+      .attr("dy", '1.1em')
+      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+      .text(function(d) {
+        return `total: ${(d.value / 1000000).toFixed(2)}`;
+      });
+
+    nodeEnter.append("text")
+      .attr("dy", '2.1em')
+      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+      .text(function(d) {
+        return `self: ${(d.data.stats.time.self / 1000000).toFixed(2)}`;
       });
 
     let zoomHandler = zoom()
