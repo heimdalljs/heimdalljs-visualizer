@@ -1,13 +1,13 @@
 import Ember from 'ember';
 
-import fetch from "ember-network/fetch";
-
 // Import the D3 packages we want to use
 import { select, event } from 'd3-selection';
 import { tree, cluster, hierarchy } from 'd3-hierarchy';
 import { zoom, zoomIdentity } from 'd3-zoom';
 
-const { $, run, get } = Ember;
+const { run, get } = Ember;
+
+const DURATION = 500;
 
 // copied these functions temporarily from `broccoli-viz` here:
 // https://github.com/ember-cli/broccoli-viz/blob/master/lib/node-by-id.js
@@ -30,23 +30,10 @@ export default Ember.Component.extend({
   },
 
   didReceiveAttrs() {
-    let graphPath = get(this, 'graphPath');
     let graphData = get(this, 'graphData');
 
-    if (this._lastGraphPath !== graphPath && graphPath) {
-      fetch(graphPath)
-        .then((response) => {
-          return response.json();
-        })
-        .then((response) => this.processRawData(response));
-
-      this._lastGraphPath = graphPath;
-    }
-
     if (this._lastGraphData !== graphData && graphData) {
-      let response = JSON.parse(graphData);
-
-      this.processRawData(response);
+      this.processRawData(graphData);
 
       this._lastGraphData = graphData;
     }
@@ -78,9 +65,13 @@ export default Ember.Component.extend({
       return node.children
         .map((childId) => data.nodesById[childId])
         .filter(this.nodeFilter);
-    }).sum(d => d.stats.time.self);
+    })
+        .sum(d => d.stats.time.self);
 
-    let graph = tree()
+    // make debugging easier, this is dumb though
+    self.root = root;
+
+    let graph = cluster()
         .separation((a,b) => {
           return a.parent == b.parent ? 4 : 8;
         })
@@ -88,29 +79,17 @@ export default Ember.Component.extend({
     graph(root);
 
     function update(source) {
-      let link = g.selectAll(".link")
-          .data(root.descendants().slice(1));
-
-      link.enter()
-        .append("path")
-        .attr("class", "link")
-        .attr("d", function(d) {
-          return "M" + d.y + "," + d.x
-            + "C" + (d.parent.y + 50) + "," + d.x
-            + " " + (d.parent.y + 50) + "," + d.parent.x
-            + " " + d.parent.y + "," + d.parent.x;
-        });
-
-      let node = g.selectAll(".node")
-          .data(root.descendants());
+      let nodes = root.descendants();
+      let links = root.links();
+      let node = g
+          .selectAll(".node")
+          .data(nodes, d => d.data._id);
 
       let nodeEnter = node
           .enter()
           .append("g")
           .attr("class", 'node')
-          .attr("transform", function(d) {
-            return "translate(" + d.y + "," + d.x + ")";
-          })
+          .attr("transform", d => `translate(${d.y},${d.x})`)
           .on('click', (d) => {
             // Toggle children on click.
             if (d.children) {
@@ -135,26 +114,30 @@ export default Ember.Component.extend({
       //   .attr('stroke-width', 1)
       //   .style('fill', "#fff");
 
-      nodeEnter.append('text')
+      nodeEnter
+        .append('text')
         .attr('dy', '-1.1em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(d => d.data._id);
 
-      nodeEnter.append("text")
+      nodeEnter
+        .append("text")
         .attr("dy", '0.1em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(function(d) {
           return d.data.id.name;
         });
 
-      nodeEnter.append("text")
+      nodeEnter
+        .append("text")
         .attr("dy", '1.1em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(function(d) {
           return `total: ${(d.value / 1000000).toFixed(2)}`;
         });
 
-      nodeEnter.append("text")
+      nodeEnter
+        .append("text")
         .attr("dy", '2.1em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(function(d) {
@@ -162,17 +145,34 @@ export default Ember.Component.extend({
         });
 
       // Transition exiting nodes to the parent's new position.
-      node.exit()
+      node
+        .exit()
         .transition()
-        .duration(50)
+        .duration(DURATION)
         .attr("transform", function () {
           return "translate(" + source.x + "," + source.y + ")";
         })
         .remove();
 
-      link.exit()
+      let link = g
+          .selectAll(".link")
+          .data(links, d => d.target.data._id);
+
+      link
+        .enter()
+        .append("path")
+        .attr("class", "link")
+        .attr("d", function(d) {
+          return "M" + d.target.y + "," + d.target.x
+            + "C" + (d.source.y + 50) + "," + d.target.x
+            + " " + (d.source.y + 50) + "," + d.source.x
+            + " " + d.source.y + "," + d.source.x;
+        });
+
+      link
+        .exit()
         .transition()
-        .duration(50)
+        .duration(DURATION / 2)
         .attr("transform", function () {
           return "translate(" + source.x + "," + source.y + ")";
         })
