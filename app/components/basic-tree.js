@@ -4,19 +4,13 @@ import fetch from "ember-network/fetch";
 
 // Import the D3 packages we want to use
 import { select, event } from 'd3-selection';
-import { scaleLinear } from 'd3-scale';
-import { extent, ascending } from 'd3-array';
-import { transition } from 'd3-transition';
-import { easeCubicInOut } from 'd3-ease';
-import { cluster, stratify } from 'd3-hierarchy';
-import { zoom, scaleExtent } from 'd3-zoom';
+import { tree, cluster, hierarchy } from 'd3-hierarchy';
+import { zoom, zoomIdentity } from 'd3-zoom';
 
 const { $, run, get } = Ember;
 
 // copied these functions temporarily from `broccoli-viz` here:
-// https://github.com/ember-cli/broccoli-viz/blob/master/lib/build-graph.js
-// https://github.com/ember-cli/broccoli-viz/blob/master/lib/process.js
-//
+// https://github.com/ember-cli/broccoli-viz/blob/master/lib/node-by-id.js
 function nodesById(nodes) {
   var result = new Array(nodes.length);
   nodes.forEach(function(node) {
@@ -25,55 +19,8 @@ function nodesById(nodes) {
   return result;
 }
 
-function annotateNode(parent, graph) {
-  var childTime = parent.children.reduce(function (acc, childId) {
-    var node = graph.nodesById[childId];
-    return acc + node.stats._broccoli_viz.totalTime;
-  }, 0);
-
-  parent.stats._broccoli_viz = {
-    totalTime: childTime + parent.stats.time.self,
-  };
-
-  return parent;
-}
-
-
-function visitPostOrder(node, graph, cb) {
-  node.children.forEach(function (id) {
-    var child = graph.nodesById[id];
-    child._parentId = node._id;
-    visitPostOrder(child, graph, cb);
-  });
-
-  cb(node, graph);
-}
-
-function annotateNodes(graph) {
-  visitPostOrder(graph.nodes[0], graph, annotateNode);
-
-  return graph;
-}
-
-function processData(nodes) {
-  let byId = nodesById(nodes);
-
-  let graph = {
-    nodesById: byId,
-    nodes: nodes
-  };
-
-  return annotateNodes(graph);
-}
-
 export default Ember.Component.extend({
-  tagName: 'svg',
   classNames: ['basic-tree'],
-
-  width: 5000,
-  height: 3000,
-
-  attributeBindings: ['width', 'height'],
 
   init() {
     this._super(...arguments);
@@ -84,39 +31,53 @@ export default Ember.Component.extend({
 
   didReceiveAttrs() {
     let graphPath = get(this, 'graphPath');
+    let graphData = get(this, 'graphData');
 
-    if (this._lastGraphPath !== graphPath) {
+    if (this._lastGraphPath !== graphPath && graphPath) {
       fetch(graphPath)
         .then((response) => {
           return response.json();
         })
-        .then((response) => {
-          this._graphData = processData(response.nodes);
-
-          run.schedule('render', this, this.drawTree, this._graphData);
-        });
+        .then((response) => this.processRawData(response));
 
       this._lastGraphPath = graphPath;
     }
+
+    if (this._lastGraphData !== graphData && graphData) {
+      let response = JSON.parse(graphData);
+
+      this.processRawData(response);
+
+      this._lastGraphData = graphData;
+    }
+  },
+
+  processRawData(response) {
+    this._graphData = {
+      nodesById: nodesById(response.nodes),
+      nodes: response.nodes
+    };
+
+    run.schedule('render', this, this.drawTree, this._graphData);
   },
 
   drawTree(data) {
-    let svg = select(this.element);
-    let width = +svg.attr("width");
-    let height = +svg.attr("height");
+    let svg = select(this.element.querySelector('.svg-container'))
+        .append("svg")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 300 300")
+        .classed("svg-content", true);
 
-    let g = svg
-        .append("g")
-        .attr("transform", "translate(60,0)");
+    let g = svg.append("g");
 
-    let graphStratifier = stratify()
-        .id(d => d._id)
-        .parentId(d => d._parentId);
-    let root = graphStratifier(data.nodes);
+    let root = hierarchy(data.nodes[0], (node) => {
+      return node.children.map((childId) => data.nodesById[childId]);
+    }).sum(d => d.stats.time.self);
 
-    let tree = cluster().size([height, width - 160]);
+    let { clientHeight, clientWidth } = this.element;
 
-    tree(root);
+    let graph = tree().size([clientHeight, clientWidth]);
+    graph(root);
 
     g.selectAll(".link")
       .data(root.descendants().slice(1))
@@ -155,6 +116,14 @@ export default Ember.Component.extend({
       .on("zoom", () => {
         g.attr("transform", event.transform);
       });
+
+    function transform() {
+      return zoomIdentity
+        .translate(60, 0)
+        .scale(0.14);
+    }
+
+    svg.call(zoomHandler.transform, transform());
     svg.call(zoomHandler);
   }
 });
