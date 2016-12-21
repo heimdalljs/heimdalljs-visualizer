@@ -87,9 +87,10 @@ export default Ember.Component.extend({
         .nodeSize([6, 180]);
     graph(root);
 
-    g.selectAll(".link")
-      .data(root.descendants().slice(1))
-      .enter()
+    let link = g.selectAll(".link")
+        .data(root.descendants().slice(1));
+
+    link.enter()
       .append("path")
       .attr("class", "link")
       .attr("d", function(d) {
@@ -100,7 +101,9 @@ export default Ember.Component.extend({
       });
 
     let node = g.selectAll(".node")
-        .data(root.descendants())
+        .data(root.descendants());
+
+    let nodeEnter = node
         .enter()
         .append("g")
         .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
