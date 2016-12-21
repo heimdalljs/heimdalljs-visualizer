@@ -87,55 +87,99 @@ export default Ember.Component.extend({
         .nodeSize([6, 180]);
     graph(root);
 
-    let link = g.selectAll(".link")
-        .data(root.descendants().slice(1));
+    function update(source) {
+      let link = g.selectAll(".link")
+          .data(root.descendants().slice(1));
 
-    link.enter()
-      .append("path")
-      .attr("class", "link")
-      .attr("d", function(d) {
-        return "M" + d.y + "," + d.x
-          + "C" + (d.parent.y + 50) + "," + d.x
-          + " " + (d.parent.y + 50) + "," + d.parent.x
-          + " " + d.parent.y + "," + d.parent.x;
-      });
-
-    let node = g.selectAll(".node")
-        .data(root.descendants());
-
-    let nodeEnter = node
-        .enter()
-        .append("g")
-        .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
-        .attr("transform", function(d) {
-          return "translate(" + d.y + "," + d.x + ")";
+      link.enter()
+        .append("path")
+        .attr("class", "link")
+        .attr("d", function(d) {
+          return "M" + d.y + "," + d.x
+            + "C" + (d.parent.y + 50) + "," + d.x
+            + " " + (d.parent.y + 50) + "," + d.parent.x
+            + " " + d.parent.y + "," + d.parent.x;
         });
 
-    nodeEnter.append('text')
-      .attr('dy', '-1.1em')
-      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-      .text(d => d.data._id);
+      let node = g.selectAll(".node")
+          .data(root.descendants());
 
-    nodeEnter.append("text")
-      .attr("dy", '0.1em')
-      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-      .text(function(d) {
-        return d.data.id.name;
-      });
+      let nodeEnter = node
+          .enter()
+          .append("g")
+          .attr("class", 'node')
+          .attr("transform", function(d) {
+            return "translate(" + d.y + "," + d.x + ")";
+          })
+          .on('click', (d) => {
+            // Toggle children on click.
+            if (d.children) {
+              d._children = d.children;
+              d.children = null;
+            } else {
+              d.children = d._children;
+              d._children = null;
+            }
+            update(d);
+          });
 
-    nodeEnter.append("text")
-      .attr("dy", '1.1em')
-      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-      .text(function(d) {
-        return `total: ${(d.value / 1000000).toFixed(2)}`;
-      });
+      // we want to wrap the next few text lines in a rect
+      // but alignment is annoying, punting for now...
+      //
+      // nodeEnter.append("rect")
+      //   .attr('x', '-75')
+      //   .attr('y', '-1.5em')
+      //   .attr('width', '75px')
+      //   .attr('height', "3em")
+      //   .attr('stroke', "black")
+      //   .attr('stroke-width', 1)
+      //   .style('fill', "#fff");
 
-    nodeEnter.append("text")
-      .attr("dy", '2.1em')
-      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-      .text(function(d) {
-        return `self: ${(d.data.stats.time.self / 1000000).toFixed(2)}`;
-      });
+      nodeEnter.append('text')
+        .attr('dy', '-1.1em')
+        .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+        .text(d => d.data._id);
+
+      nodeEnter.append("text")
+        .attr("dy", '0.1em')
+        .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+        .text(function(d) {
+          return d.data.id.name;
+        });
+
+      nodeEnter.append("text")
+        .attr("dy", '1.1em')
+        .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+        .text(function(d) {
+          return `total: ${(d.value / 1000000).toFixed(2)}`;
+        });
+
+      nodeEnter.append("text")
+        .attr("dy", '2.1em')
+        .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+        .text(function(d) {
+          return `self: ${(d.data.stats.time.self / 1000000).toFixed(2)}`;
+        });
+
+      // Transition exiting nodes to the parent's new position.
+      node.exit()
+        .transition()
+        .duration(50)
+        .attr("transform", function () {
+          return "translate(" + source.x + "," + source.y + ")";
+        })
+        .remove();
+
+      link.exit()
+        .transition()
+        .duration(50)
+        .attr("transform", function () {
+          return "translate(" + source.x + "," + source.y + ")";
+        })
+        .remove();
+    }
+
+    update(root);
 
     let zoomHandler = zoom()
       .scaleExtent([0.05, 3])
