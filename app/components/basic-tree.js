@@ -80,9 +80,11 @@ export default Ember.Component.extend({
         .filter(this.nodeFilter);
     }).sum(d => d.stats.time.self);
 
-    let { clientHeight, clientWidth } = this.element;
-
-    let graph = tree().size([clientHeight, clientWidth]);
+    let graph = tree()
+        .separation((a,b) => {
+          return a.parent == b.parent ? 4 : 8;
+        })
+        .nodeSize([6, 180]);
     graph(root);
 
     g.selectAll(".link")
