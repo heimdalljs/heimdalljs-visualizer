@@ -1,4 +1,8 @@
 import Ember from 'ember';
+import fetch from "ember-network/fetch";
+import config from '../config/environment';
+
+const SAMPLE_DATA = config.rootURL + 'broccoli-viz-files/initial-build-canary-20161220.json';
 
 export default Ember.Controller.extend({
   init() {
@@ -16,6 +20,16 @@ export default Ember.Controller.extend({
       };
 
       reader.readAsText(event.target.files[0]);
+    },
+
+    useSample() {
+      fetch(SAMPLE_DATA)
+        .then((response) => {
+          return response.json();
+        })
+        .then((response) => {
+          this.set('graphData', response);
+        });
     }
   }
 });

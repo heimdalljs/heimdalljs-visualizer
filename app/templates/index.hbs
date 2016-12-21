@@ -1,0 +1,14 @@
+<form>
+  <div>
+    <label for="file-upload">Upload the output of <code>BROCCOLI_VIZ=1 ember build</code>:</label>
+    <input name="file-upload" type="file" onchange={{action 'parseFile'}}>
+  </div>
+  <div>
+    <button {{action 'useSample'}}>Display sample</button>
+  </div>
+</form>
+
+{{! basic-tree graphData=graphData}}
+
+{{! useful for testing... }}
+{{ basic-tree graphData=graphData}}
