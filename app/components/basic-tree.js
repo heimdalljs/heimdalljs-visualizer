@@ -138,7 +138,7 @@ export default Ember.Component.extend({
       });
 
     let zoomHandler = zoom()
-      .scaleExtent([0.1, 3])
+      .scaleExtent([0.05, 3])
       .on("zoom", () => {
         g.attr("transform", event.transform);
       });
