@@ -61,6 +61,10 @@ export default Ember.Component.extend({
     run.schedule('render', this, this.drawTree, this._graphData);
   },
 
+  nodeFilter(node) {
+    return node.id.broccoliNode;
+  },
+
   drawTree(data) {
     let svg = select(this.element.querySelector('.svg-container'))
         .append("svg")
@@ -71,7 +75,9 @@ export default Ember.Component.extend({
     let g = svg.append("g");
 
     let root = hierarchy(data.nodes[0], (node) => {
-      return node.children.map((childId) => data.nodesById[childId]);
+      return node.children
+        .map((childId) => data.nodesById[childId])
+        .filter(this.nodeFilter);
     }).sum(d => d.stats.time.self);
 
     let { clientHeight, clientWidth } = this.element;
