@@ -95,8 +95,8 @@ export default Ember.Component.extend({
       .attr("class", "link")
       .attr("d", function(d) {
         return "M" + d.y + "," + d.x
-          + "C" + (d.parent.y + 100) + "," + d.x
-          + " " + (d.parent.y + 100) + "," + d.parent.x
+          + "C" + (d.parent.y + 50) + "," + d.x
+          + " " + (d.parent.y + 50) + "," + d.parent.x
           + " " + d.parent.y + "," + d.parent.x;
       });
 
