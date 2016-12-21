@@ -2,8 +2,13 @@
 
 module.exports = function(deployTarget) {
   var ENV = {
-    build: {}
+    build: {},
     // include other plugin configuration that applies to all deploy targets here
+    git: {
+      repo: 'git@github.com:rwjblue/heimdalljs-visualizer.git',
+      branch: 'gh-pages',
+      worktreePath: '/tmp/deploy'
+    }
   };
 
   if (deployTarget === 'development') {
