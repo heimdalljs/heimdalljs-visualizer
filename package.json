@@ -1,14 +1,16 @@
 {
   "name": "heimdalljs-visualizer",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "description": "Small description for heimdalljs-visualizer goes here",
   "license": "MIT",
-  "author": "",
+  "author": "Robert Jackson <me@rwjblue.com>",
   "directories": {
-    "doc": "doc",
     "test": "tests"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rwjblue/heimdalljs-visualizer.git"
+  },
   "scripts": {
     "build": "ember build",
     "start": "ember server",
@@ -46,5 +48,9 @@
   "dependencies": {
     "ember-d3": "^0.3.1",
     "ember-network": "^0.3.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/rwjblue/heimdalljs-visualizer/issues"
+  },
+  "homepage": "https://github.com/rwjblue/heimdalljs-visualizer#readme"
 }
