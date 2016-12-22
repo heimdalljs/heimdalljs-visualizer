@@ -76,9 +76,9 @@ export default Ember.Component.extend({
           return a.parent == b.parent ? 4 : 8;
         })
         .nodeSize([6, 180]);
-    graph(root);
 
     function update(source) {
+      graph(root);
       let nodes = root.descendants();
       let links = root.links();
       let node = g
@@ -144,6 +144,12 @@ export default Ember.Component.extend({
           return `self: ${(d.data.stats.time.self / 1000000).toFixed(2)}`;
         });
 
+      // update exiting node locations
+      node
+        .transition()
+        .duration(DURATION)
+        .attr('transform', d => `translate(${d.y},${d.x})`);
+
       // Transition exiting nodes to the parent's new position.
       node
         .exit()
@@ -169,6 +175,17 @@ export default Ember.Component.extend({
             + " " + d.source.y + "," + d.source.x;
         });
 
+      link
+        .transition()
+        .duration(DURATION)
+        .attr("d", function(d) {
+          return "M" + d.target.y + "," + d.target.x
+            + "C" + (d.source.y + 50) + "," + d.target.x
+            + " " + (d.source.y + 50) + "," + d.source.x
+            + " " + d.source.y + "," + d.source.x;
+        });
+
+      // update exiting link locations
       link
         .exit()
         .transition()
