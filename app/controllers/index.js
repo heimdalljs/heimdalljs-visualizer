@@ -16,7 +16,7 @@ export default Ember.Controller.extend({
       let reader = new FileReader();
       reader.onload = (e) => {
         var contents = e.target.result;
-        this.set('graphData', contents);
+        this.set('graphData', JSON.parse(contents));
       };
 
       reader.readAsText(event.target.files[0]);
