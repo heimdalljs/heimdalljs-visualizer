@@ -53,7 +53,10 @@ export default Ember.Component.extend({
   },
 
   drawTree(data) {
-    let svg = select(this.element.querySelector('.svg-container'))
+    let svgContainer = this.element.querySelector('.svg-container');
+    svgContainer.innerHTML = '';
+
+    let svg = select(svgContainer)
         .append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 300 300")
@@ -199,7 +202,6 @@ export default Ember.Component.extend({
     update(root);
 
     let zoomHandler = zoom()
-      .scaleExtent([0.05, 3])
       .on("zoom", () => {
         g.attr("transform", event.transform);
       });

@@ -4,7 +4,11 @@
     <input name="file-upload" type="file" onchange={{action 'parseFile'}}>
   </div>
   <div>
-    <button {{action 'useSample'}}>Display sample</button>
+    <select onchange={{action 'useSample' value="target.value"}}>
+      <option selected disabled>Choose sample file</option>
+      <option value="./broccoli-viz-files/initial-build-canary-20161220.json">Empty Project - 2016-12-20</option>
+      <option value="./broccoli-viz-files/ghost-initial-build-canary-ember-cli-20161222.json">Ghost Admin Client - 2016-12-22</option>
+    </select>
   </div>
 </form>
 
