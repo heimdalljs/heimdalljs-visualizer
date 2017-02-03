@@ -1,0 +1,14 @@
+<select onchange={{action 'updateFilter'}}>
+  <option value="addon-discovery">Show Addon Discovery</option>
+  <option selected value="addon-initialization">Show Addon Initialization</option>
+</select>
+
+<ul>
+  {{#each nodes as |node|}}
+    <li>{{node.label.name}} - {{ns-to-ms node.stats.time.self}}</li>
+  {{/each}}
+</ul>
+
+<div>
+  Total: {{ns-to-ms totalTime}}
+</div>
