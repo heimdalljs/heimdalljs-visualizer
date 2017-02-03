@@ -12,6 +12,10 @@ function filterForAddonDiscoveryNodes(node) {
   return node.label.addonDiscoveryNode;
 }
 
+function filterForBroccoliNodes(node) {
+  return node.label.broccoliNode;
+}
+
 export default Ember.Component.extend({
   filter: filterForAddonInitializationNodes,
 
@@ -52,6 +56,9 @@ export default Ember.Component.extend({
         break;
       case 'addon-initialization':
         filter = filterForAddonInitializationNodes;
+        break;
+      case 'broccoli-node':
+        filter = filterForBroccoliNodes;
         break;
       }
 
