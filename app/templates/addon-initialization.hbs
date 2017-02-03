@@ -1,8 +1,0 @@
-<form>
-  <div>
-    <label for="file-upload">Upload the `instrumentation.init.json` output of <code>BROCCOLI_VIZ=1 ember build</code>:</label>
-    <input name="file-upload" type="file" onchange={{action 'parseFile'}}>
-  </div>
-</form>
-
-{{addon-initialization-times data=data}}
