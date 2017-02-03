@@ -14,7 +14,7 @@ const DURATION = 500;
 function nodesById(nodes) {
   var result = new Array(nodes.length);
   nodes.forEach(function(node) {
-    result[node._id] = node;
+    result[node.id] = node;
   });
   return result;
 }
@@ -49,7 +49,7 @@ export default Ember.Component.extend({
   },
 
   nodeFilter(node) {
-    return node.id.broccoliNode;
+    return node.label.broccoliNode;
   },
 
   drawTree(data) {
@@ -78,7 +78,7 @@ export default Ember.Component.extend({
         .separation((a,b) => {
           return a.parent == b.parent ? 4 : 8;
         })
-        .nodeSize([6, 180]);
+        .nodeSize([8, 180]);
 
     function update(source) {
       graph(root);
@@ -86,7 +86,7 @@ export default Ember.Component.extend({
       let links = root.links();
       let node = g
           .selectAll(".node")
-          .data(nodes, d => d.data._id);
+          .data(nodes, d => d.data.id);
 
       let nodeEnter = node
           .enter()
@@ -118,17 +118,11 @@ export default Ember.Component.extend({
       //   .style('fill', "#fff");
 
       nodeEnter
-        .append('text')
-        .attr('dy', '-1.1em')
-        .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-        .text(d => d.data._id);
-
-      nodeEnter
         .append("text")
-        .attr("dy", '0.1em')
+        .attr("dy", '0.0em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(function(d) {
-          return d.data.id.name;
+          return d.data.label.name;
         });
 
       nodeEnter
@@ -165,7 +159,7 @@ export default Ember.Component.extend({
 
       let link = g
           .selectAll(".link")
-          .data(links, d => d.target.data._id);
+          .data(links, d => d.target.data.id);
 
       link
         .enter()
