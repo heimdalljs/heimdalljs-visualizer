@@ -4,6 +4,12 @@
   <option selected value="broccoli-node">Show Broccoli Nodes</option>
 </select>
 
+{{#if (eq filterType 'broccoli-node')}}
+  {{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
+  <button {{action (action (mut pluginNameFilter) '')}}>Clear</button>
+{{/if}}
+
+
 <ul>
   {{#each nodes as |node|}}
     <li>{{node.label.name}} - {{ns-to-ms node.stats.time.self}}</li>

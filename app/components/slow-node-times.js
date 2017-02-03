@@ -4,22 +4,34 @@ const {
   computed
 } = Ember;
 
-function filterForAddonInitializationNodes(node) {
-  return node.label.addonInitializationNode;
+function filterForAddonInitializationNodes(nodes) {
+  return nodes.filter((node) => node.label.addonInitializationNode);
 }
 
-function filterForAddonDiscoveryNodes(node) {
-  return node.label.addonDiscoveryNode;
+function filterForAddonDiscoveryNodes(nodes) {
+  return nodes.filter((node) => node.label.addonDiscoveryNode);
 }
 
-function filterForBroccoliNodes(node) {
-  return node.label.broccoliNode;
+function filterForBroccoliNodes(nodes, instance) {
+  let pluginName = instance.get('pluginNameFilter');
+
+  return nodes.filter((node) => {
+    if (!node.label.broccoliNode) { return false; }
+    if (pluginName && node.label.broccoliPluginName !== pluginName) { return false; }
+
+    return true;
+  })
 }
 
 export default Ember.Component.extend({
-  filter: filterForAddonInitializationNodes,
+  init() {
+    this._super(...arguments);
+    this.filterType = 'broccoli-node';
+  },
 
-  nodes: computed('data', 'filter', function() {
+  filter: filterForBroccoliNodes,
+
+  nodes: computed('data', 'filter', 'pluginNameFilter', function() {
     let data = this.get('data');
     let filter = this.get('filter');
     if (!data) { return []; }
@@ -27,7 +39,7 @@ export default Ember.Component.extend({
     let nodes = data.nodes;
 
     if (filter) {
-      nodes = nodes.filter(filter);
+      nodes = filter(nodes, this);
     }
 
     let addonNodes = nodes
@@ -49,8 +61,9 @@ export default Ember.Component.extend({
   actions: {
     updateFilter(event) {
       let filter;
+      let filterType = event.target.value;
 
-      switch(event.target.value) {
+      switch(filterType) {
       case 'addon-discovery':
         filter = filterForAddonDiscoveryNodes;
         break;
@@ -63,6 +76,7 @@ export default Ember.Component.extend({
       }
 
       this.set('filter', filter);
+      this.set('filterType', filterType);
     }
   }
 });
