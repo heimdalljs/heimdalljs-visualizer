@@ -4,44 +4,19 @@ const {
   computed
 } = Ember;
 
-function filterForAddonInitializationNodes(nodes) {
-  return nodes.filter((node) => node.label.addonInitializationNode);
-}
-
-function filterForAddonDiscoveryNodes(nodes) {
-  return nodes.filter((node) => node.label.addonDiscoveryNode);
-}
-
-function filterForBroccoliNodes(nodes, instance) {
-  let pluginName = instance.get('pluginNameFilter');
-
-  return nodes.filter((node) => {
-    if (!node.label.broccoliNode) { return false; }
-    if (pluginName && node.label.broccoliPluginName !== pluginName) { return false; }
-
-    return true;
-  })
-}
-
 export default Ember.Component.extend({
-  init() {
-    this._super(...arguments);
-    this.filterType = 'broccoli-node';
-  },
-
-  filter: filterForBroccoliNodes,
-
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
-    let filter = this.get('filter');
     let groupByPluginName = this.get('groupByPluginName');
+    let pluginName = this.get('pluginNameFilter');
     if (!data) { return []; }
 
-    let nodes = data.nodes;
+    let nodes = data.nodes.filter((node) => {
+      if (!node.label.broccoliNode) { return false; }
+      if (pluginName && node.label.broccoliPluginName !== pluginName) { return false; }
 
-    if (filter) {
-      nodes = filter(nodes, this);
-    }
+      return true;
+    })
 
     if (groupByPluginName) {
       let pluginNameMap = nodes.reduce((memo, node) => {
@@ -80,24 +55,5 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    updateFilter(event) {
-      let filter;
-      let filterType = event.target.value;
-
-      switch(filterType) {
-      case 'addon-discovery':
-        filter = filterForAddonDiscoveryNodes;
-        break;
-      case 'addon-initialization':
-        filter = filterForAddonInitializationNodes;
-        break;
-      case 'broccoli-node':
-        filter = filterForBroccoliNodes;
-        break;
-      }
-
-      this.set('filter', filter);
-      this.set('filterType', filterType);
-    }
   }
 });

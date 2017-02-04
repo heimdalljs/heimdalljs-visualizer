@@ -1,15 +1,6 @@
-<select onchange={{action 'updateFilter'}}>
-  <option value="addon-discovery">Show Addon Discovery</option>
-  <option value="addon-initialization">Show Addon Initialization</option>
-  <option selected value="broccoli-node">Show Broccoli Nodes</option>
-</select>
-
-{{#if (eq filterType 'broccoli-node')}}
-  {{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
-  <label>Group by Plugin Name{{input type="checkbox" checked=groupByPluginName}}</label>
-  <button {{action (action (mut pluginNameFilter) '')}}>Clear</button>
-{{/if}}
-
+{{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
+<label>Group by Plugin Name{{input type="checkbox" checked=groupByPluginName}}</label>
+<button {{action (action (mut pluginNameFilter) '')}}>Clear</button>
 
 <table>
   <thead>
