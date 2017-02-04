@@ -6,15 +6,29 @@
 
 {{#if (eq filterType 'broccoli-node')}}
   {{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
+  <label>Group by Plugin Name{{input type="checkbox" checked=groupByPluginName}}</label>
   <button {{action (action (mut pluginNameFilter) '')}}>Clear</button>
 {{/if}}
 
 
-<ul>
-  {{#each nodes as |node|}}
-    <li>{{node.label.name}} - {{ns-to-ms node.stats.time.self}}</li>
-  {{/each}}
-</ul>
+<table>
+  <thead>
+    <tr>
+      <td>Annotation</td>
+      <td>Additional Details</td>
+      <td>Time</td>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each nodes as |node|}}
+      <tr>
+        <td>{{node.label.name}}</td>
+        <td>{{node.label.broccoliPluginName}}</td>
+        <td>{{ns-to-ms node.stats.time.self}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
 
 <div>
   Total: {{ns-to-ms totalTime}}

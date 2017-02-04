@@ -31,15 +31,36 @@ export default Ember.Component.extend({
 
   filter: filterForBroccoliNodes,
 
-  nodes: computed('data', 'filter', 'pluginNameFilter', function() {
+  nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
     let filter = this.get('filter');
+    let groupByPluginName = this.get('groupByPluginName');
     if (!data) { return []; }
 
     let nodes = data.nodes;
 
     if (filter) {
       nodes = filter(nodes, this);
+    }
+
+    if (groupByPluginName) {
+      let pluginNameMap = nodes.reduce((memo, node) => {
+        let pluginName = node.label.broccoliPluginName;
+        memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
+        memo[pluginName].time += node.stats.time.self;
+        memo[pluginName].count++;
+        return memo;
+      }, {})
+
+      nodes = [];
+      for (let pluginName in pluginNameMap) {
+        nodes.push({
+          label: { name: pluginName, broccoliPluginName: pluginNameMap[pluginName].count },
+          stats: {
+            time: { self: pluginNameMap[pluginName].time}
+          }
+        });
+      }
     }
 
     let addonNodes = nodes
