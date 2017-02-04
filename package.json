@@ -52,7 +52,7 @@
     "ember-d3": "^0.3.1",
     "ember-network": "^0.3.1",
     "ember-truth-helpers": "^1.2.0",
-    "heimdalljs-graph": "^0.3.2"
+    "heimdalljs-graph": "^0.3.3"
   },
   "bugs": {
     "url": "https://github.com/rwjblue/heimdalljs-visualizer/issues"
