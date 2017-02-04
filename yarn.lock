@@ -2884,6 +2884,10 @@ heimdalljs-fs-monitor@^0.1.0:
     heimdalljs "^0.2.0"
     heimdalljs-logger "^0.1.7"
 
+heimdalljs-graph@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/heimdalljs-graph/-/heimdalljs-graph-0.3.2.tgz#b3638ecbf05de5f34311f524173ac910d37eb1fd"
+
 heimdalljs-logger@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/heimdalljs-logger/-/heimdalljs-logger-0.1.7.tgz#10e340af5c22a811e34522d9b9397675ad589ca4"
