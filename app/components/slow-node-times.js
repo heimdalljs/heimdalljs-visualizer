@@ -64,6 +64,7 @@ export default Ember.Component.extend({
       nodes = [];
       for (let pluginName in pluginNameMap) {
         nodes.push({
+          groupedByPluginName: true,
           label: { name: pluginName, broccoliPluginName: pluginNameMap[pluginName].count },
           _stats: {
             time: { plugin: pluginNameMap[pluginName].time }
@@ -90,7 +91,12 @@ export default Ember.Component.extend({
 
   actions: {
     'focus-node'(node) {
-      this.get('graph').selectNode(node);
+      if (node.groupedByPluginName) {
+        this.set('groupByPluginName', false);
+        this.set('pluginNameFilter', node.label.name);
+      } else {
+        this.get('graph').selectNode(node);
+      }
     }
   }
 });
