@@ -49,6 +49,8 @@
   },
   "private": true,
   "dependencies": {
+    "broccoli-merge-trees": "^1.2.1",
+    "bulma": "^0.3.1",
     "ember-d3": "^0.3.1",
     "ember-network": "^0.3.1",
     "ember-truth-helpers": "^1.2.0",

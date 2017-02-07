@@ -1,12 +1,16 @@
 /*jshint node:true*/
 /* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+var MergeTrees = require('broccoli-merge-trees');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     // Add options here
     trees: {
-      vendor: 'node_modules/heimdalljs-graph'
+      vendor: new MergeTrees([
+        'node_modules/heimdalljs-graph',
+        'node_modules/bulma',
+      ], { overwrite: true })
     }
   });
 
@@ -24,6 +28,7 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/dist/amd/heimdalljs-graph.js');
+  app.import('vendor/css/bulma.css');
 
   return app.toTree();
 };

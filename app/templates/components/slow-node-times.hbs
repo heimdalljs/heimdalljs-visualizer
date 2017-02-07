@@ -2,25 +2,30 @@
 <label>Group by Plugin Name{{input type="checkbox" checked=groupByPluginName}}</label>
 <button {{action (action (mut pluginNameFilter) '')}}>Clear</button>
 
-<table>
+<table class="table is-striped">
   <thead>
     <tr>
-      <td>Description</td>
+      <td style="width: 65%">Description</td>
       <td>{{if groupByPluginName "Count" "Plugin Name"}}</td>
       <td>Time (ms)</td>
+      <td>&nbsp;</td>
     </tr>
   </thead>
   <tbody>
     {{#each nodes as |node|}}
-      <tr onclick={{action 'focus-node' node}}>
+      <tr>
         <td>{{node.label.name}}</td>
         <td>{{node.label.broccoliPluginName}}</td>
         <td>{{ns-to-ms node._stats.time.plugin}}</td>
+        <td>
+          <button {{action 'focus-node' node}}>Show Graph</button></td>
       </tr>
     {{/each}}
   </tbody>
+  <tfoot>
+    <tr>
+      <td colspan=3 class="has-text-right">Total</td>
+      <td>{{ns-to-ms totalTime}}</td>
+    </tr>
+  </tfoot>
 </table>
-
-<div>
-  Total: {{ns-to-ms totalTime}}
-</div>
