@@ -1,5 +1,22 @@
-{{link-to 'Slow Nodes' 'slow-nodes'}}
-
-<hr>
+<section class="hero is-light">
+  <nav class="nav">
+    <div class="nav-left">
+      {{link-to 'Home' 'index' class="nav-item is-tab" activeClass="is-active"}}
+      {{link-to 'Slow Nodes' 'slow-nodes' class="nav-item is-tab" activeClass="is-active"}}
+    </div>
+    <div class="nav-center">
+      <p class="nav-item title">
+        Heimdall Visualizer
+      </p>
+    </div>
+    <div class="nav-right">
+      <a class="nav-item" href="https://github.com/rwjblue/heimdalljs-visualizer">
+        <span class="icon">
+          <i class="fa fa-github"></i>
+        </span>
+      </a>
+    </div>
+  </nav>
+</section>
 
 {{outlet}}
