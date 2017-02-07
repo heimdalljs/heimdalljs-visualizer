@@ -8,23 +8,46 @@
       <td style="width: 65%">Description</td>
       <td>{{if groupByPluginName "Count" "Plugin Name"}}</td>
       <td>Time (ms)</td>
-      <td>&nbsp;</td>
     </tr>
   </thead>
   <tbody>
     {{#each nodes as |node|}}
-      <tr>
+      <tr {{action 'toggleDetailsForNode' node}}>
         <td>{{node.label.name}}</td>
         <td>{{node.label.broccoliPluginName}}</td>
         <td>{{ns-to-ms node._stats.time.plugin}}</td>
-        <td>
-          <button {{action 'focus-node' node}}>Show Graph</button></td>
       </tr>
+      {{#if node.showDetails}}
+        <tr>
+          <td colspan="3">
+            <div class="card">
+              <header class="card-header">
+                <p class="card-header-title">
+                  Node Stats
+                </p>
+              </header>
+              <div class="card-content">
+                {{#each-in (stats-iterator node) as |stat value|}}
+                  <div>
+                    <strong>{{stat}}</strong>:
+                    {{#if (includes stat 'time')}}
+                      {{ns-to-ms value}}ms
+                    {{else}}
+                      {{value}}
+                    {{/if}}
+                  </div>
+                {{/each-in}}
+              </div>
+            </div>
+            <button class="button" {{action 'focus-node' node}}>Show Graph</button>
+          </td>
+        </tr>
+      {{/if}}
     {{/each}}
   </tbody>
   <tfoot>
     <tr>
-      <td colspan=3 class="has-text-right">Total</td>
+      <td colspan=2 class="has-text-right">Total</td>
       <td>{{ns-to-ms totalTime}}</td>
     </tr>
   </tfoot>

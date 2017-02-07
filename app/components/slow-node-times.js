@@ -1,8 +1,9 @@
 import Ember from 'ember';
 
 const {
+  get,
+  set,
   computed,
-  getOwner,
   inject
 } = Ember;
 
@@ -91,11 +92,16 @@ export default Ember.Component.extend({
 
   actions: {
     'focus-node'(node) {
+      this.get('graph').selectNode(node);
+    },
+
+    toggleDetailsForNode(node) {
       if (node.groupedByPluginName) {
         this.set('groupByPluginName', false);
         this.set('pluginNameFilter', node.label.name);
       } else {
-        this.get('graph').selectNode(node);
+        let shown = get(node, 'showDetails');
+        set(node, 'showDetails', !shown);
       }
     }
   }
