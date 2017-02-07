@@ -5,17 +5,17 @@
 <table>
   <thead>
     <tr>
-      <td>Annotation</td>
-      <td>Additional Details</td>
-      <td>Time</td>
+      <td>Description</td>
+      <td>{{if groupByPluginName "Count" "Plugin Name"}}</td>
+      <td>Time (ms)</td>
     </tr>
   </thead>
   <tbody>
     {{#each nodes as |node|}}
-      <tr>
+      <tr onclick={{action 'focus-node' node}}>
         <td>{{node.label.name}}</td>
         <td>{{node.label.broccoliPluginName}}</td>
-        <td>{{ns-to-ms node.time}}</td>
+        <td>{{ns-to-ms node._stats.time.plugin}}</td>
       </tr>
     {{/each}}
   </tbody>

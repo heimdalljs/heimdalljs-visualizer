@@ -1,8 +1,9 @@
 import Ember from 'ember';
-import heimdallGraph from 'heimdalljs-graph';
 
 const {
-  computed
+  computed,
+  getOwner,
+  inject
 } = Ember;
 
 function selfTime(node) {
@@ -23,54 +24,57 @@ function nodeTime(node) {
 }
 
 export default Ember.Component.extend({
+  graph: inject.service(),
+
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
     if (!data) { return []; }
 
     let nodes = [];
-    let graph = heimdallGraph.loadFromJSON(data);
 
-    for (let node of graph.dfsIterator()) {
+    for (let node of data.dfsIterator()) {
       if (node.label.broccoliNode) {
-        nodes.push({
-          label: node.label,
-          time: nodeTime(node)
-        })
+        nodes.push(node);
+        if (!node._stats.time.plugin) {
+          node._stats.time.plugin = nodeTime(node);
+        }
       }
     }
 
-    //let groupByPluginName = this.get('groupByPluginName');
-    //let pluginName = this.get('pluginNameFilter');
-    // nodes = data.nodes.filter((node) => {
-    //   if (!node.label.broccoliNode) { return false; }
-    //   if (pluginName && node.label.broccoliPluginName !== pluginName) { return false; }
+    let pluginNameFilter = this.get('pluginNameFilter');
+    if (pluginNameFilter) {
+      nodes = nodes.filter((node) => {
+        if (!node.label.broccoliNode) { return false; }
+        if (node.label.broccoliPluginName !== pluginNameFilter) { return false; }
 
-    //   return true;
-    // })
+        return true;
+      });
+    }
 
-    // if (groupByPluginName) {
-    //   let pluginNameMap = nodes.reduce((memo, node) => {
-    //     let pluginName = node.label.broccoliPluginName;
-    //     memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
-    //     memo[pluginName].time += node.stats.time.self;
-    //     memo[pluginName].count++;
-    //     return memo;
-    //   }, {})
+    let groupByPluginName = this.get('groupByPluginName');
+    if (groupByPluginName) {
+      let pluginNameMap = nodes.reduce((memo, node) => {
+        let pluginName = node.label.broccoliPluginName;
+        memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
+        memo[pluginName].time += node._stats.time.plugin;
+        memo[pluginName].count++;
+        return memo;
+      }, {})
 
-    //   nodes = [];
-    //   for (let pluginName in pluginNameMap) {
-    //     nodes.push({
-    //       label: { name: pluginName, broccoliPluginName: pluginNameMap[pluginName].count },
-    //       stats: {
-    //         time: { self: pluginNameMap[pluginName].time}
-    //       }
-    //     });
-    //   }
-    // }
+      nodes = [];
+      for (let pluginName in pluginNameMap) {
+        nodes.push({
+          label: { name: pluginName, broccoliPluginName: pluginNameMap[pluginName].count },
+          _stats: {
+            time: { plugin: pluginNameMap[pluginName].time }
+          }
+        });
+      }
+    }
 
     let sortedNodes = nodes
         .sort((a, b) => {
-          return b.time - a.time;
+          return b._stats.time.plugin - a._stats.time.plugin;
         });
 
     return sortedNodes;
@@ -80,10 +84,13 @@ export default Ember.Component.extend({
     let nodes = this.get('nodes');
 
     return nodes.reduce(function(previousValue, node){
-      return previousValue + node.time;
+      return previousValue + node._stats.time.plugin;
     }, 0);
   }),
 
   actions: {
+    'focus-node'(node) {
+      this.get('graph').selectNode(node);
+    }
   }
 });

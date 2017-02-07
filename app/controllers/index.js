@@ -2,19 +2,19 @@ import Ember from 'ember';
 import fetch from "ember-network/fetch";
 import config from '../config/environment';
 
-export default Ember.Controller.extend({
-  init() {
-    this._super(...arguments);
+const {
+  inject
+} = Ember;
 
-    this.graphData = null;
-  },
+export default Ember.Controller.extend({
+  graph: inject.service(),
 
   actions: {
     parseFile(event) {
       let reader = new FileReader();
       reader.onload = (e) => {
         var contents = e.target.result;
-        this.set('graphData', JSON.parse(contents));
+        this.get('graph').setGraph(JSON.parse(contents));
       };
 
       reader.readAsText(event.target.files[0]);
@@ -26,7 +26,7 @@ export default Ember.Controller.extend({
           return response.json();
         })
         .then((response) => {
-          this.set('graphData', response);
+          this.get('graph').setGraph(JSON.parse(contents));
         });
     }
   }

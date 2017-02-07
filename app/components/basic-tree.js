@@ -5,27 +5,21 @@ import { select, event } from 'd3-selection';
 import { tree, cluster, hierarchy } from 'd3-hierarchy';
 import { zoom, zoomIdentity } from 'd3-zoom';
 
-const { run, get } = Ember;
+const { run, get, inject } = Ember;
 
 const DURATION = 500;
 
 // copied these functions temporarily from `broccoli-viz` here:
 // https://github.com/ember-cli/broccoli-viz/blob/master/lib/node-by-id.js
-function nodesById(nodes) {
-  var result = new Array(nodes.length);
-  nodes.forEach(function(node) {
-    result[node.id] = node;
-  });
-  return result;
-}
 
 export default Ember.Component.extend({
   classNames: ['basic-tree'],
 
+  graph: inject.service(),
+
   init() {
     this._super(...arguments);
 
-    this._lastGraphPath = null;
     this._graphData = null;
   },
 
@@ -33,26 +27,17 @@ export default Ember.Component.extend({
     let graphData = get(this, 'graphData');
 
     if (this._lastGraphData !== graphData && graphData) {
-      this.processRawData(graphData);
+      run.schedule('render', this, this.drawTree, graphData);
 
       this._lastGraphData = graphData;
     }
-  },
-
-  processRawData(response) {
-    this._graphData = {
-      nodesById: nodesById(response.nodes),
-      nodes: response.nodes
-    };
-
-    run.schedule('render', this, this.drawTree, this._graphData);
   },
 
   nodeFilter(node) {
     return node.label.broccoliNode;
   },
 
-  drawTree(data) {
+  drawTree(graphNode) {
     let svgContainer = this.element.querySelector('.svg-container');
     svgContainer.innerHTML = '';
 
@@ -64,12 +49,19 @@ export default Ember.Component.extend({
 
     let g = svg.append("g");
 
-    let root = hierarchy(data.nodes[0], (node) => {
-      return node.children
-        .map((childId) => data.nodesById[childId])
-        .filter(this.nodeFilter);
+    let root = hierarchy(graphNode, (node) => {
+      let children = [];
+      for (let child of node.adjacentIterator()) {
+        if (this.nodeFilter && !this.nodeFilter(child)) {
+          continue;
+        }
+
+        children.push(child);
+      }
+
+      return children;
     })
-        .sum(d => d.stats.time.self);
+        .sum(d => d._stats.time.self);
 
     // make debugging easier, this is dumb though
     self.root = root;
@@ -122,7 +114,7 @@ export default Ember.Component.extend({
         .attr("dy", '0.0em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(function(d) {
-          return d.data.label.name;
+          return `${d.data.label.name} (${d.data._id})`;
         });
 
       nodeEnter
@@ -138,7 +130,7 @@ export default Ember.Component.extend({
         .attr("dy", '2.1em')
         .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
         .text(function(d) {
-          return `self: ${(d.data.stats.time.self / 1000000).toFixed(2)}`;
+          return `self: ${(d.data._stats.time.self / 1000000).toFixed(2)}`;
         });
 
       // update exiting node locations
