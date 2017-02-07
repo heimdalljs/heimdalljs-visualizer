@@ -14,8 +14,7 @@ function selfTime(node) {
 }
 
 function nodeTime(node) {
-  let nodeTotal = selfTime(node);
-
+  let nodeTotal = 0;
   for (let childNode of node.dfsIterator((n) => n.label.broccoliNode)) {
     nodeTotal += selfTime(childNode);
   }
