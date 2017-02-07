@@ -1,6 +1,25 @@
-{{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
-<label>Group by Plugin Name{{input type="checkbox" checked=groupByPluginName}}</label>
-<button {{action (action (mut pluginNameFilter) '')}}>Clear</button>
+<div class="level">
+  <div class="level-left">
+    <div class="level-item">
+      <p class="control">
+        {{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
+      </p>
+    </div>
+    <div class="level-item">
+      <p class="control">
+        <label class="checkbox">
+          {{input type="checkbox" checked=groupByPluginName}}
+          Group by Plugin Name
+        </label>
+      </p>
+    </div>
+  </div>
+  <div class="level-right">
+    <p class="control">
+      <button class="button" {{action (action (mut pluginNameFilter) '')}}>Clear</button>
+    </p>
+  </div>
+</div>
 
 <table class="table is-striped">
   <thead>

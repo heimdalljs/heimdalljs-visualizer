@@ -1,17 +1,3 @@
-<form>
-  <div>
-    <label for="file-upload">Upload the output of <code>BROCCOLI_VIZ=1 ember build</code>:</label>
-    <input name="file-upload" type="file" onchange={{action 'parseFile'}}>
-  </div>
-  <div>
-    <select onchange={{action 'useSample' value="target.value"}}>
-      <option selected disabled>Choose sample file</option>
-      <option value="./broccoli-viz-files/initial-build-canary-ember-cli-20170206.json">Empty Project - 2017-02-06</option>
-      <option value="./broccoli-viz-files/ghost-initial-build-canary-ember-cli-20170206.json">Ghost Admin Client - 2017-02-06</option>
-    </select>
-  </div>
-</form>
-
 {{! basic-tree graphData=graphData}}
 
 {{! useful for testing... }}
