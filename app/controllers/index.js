@@ -25,8 +25,8 @@ export default Ember.Controller.extend({
         .then((response) => {
           return response.json();
         })
-        .then((response) => {
-          this.get('graph').setGraph(JSON.parse(contents));
+        .then((contents) => {
+          this.get('graph').setGraph(contents);
         });
     }
   }
