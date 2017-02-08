@@ -9,16 +9,14 @@ You will need the following things properly installed on your computer.
 
 * [Git](https://git-scm.com/)
 * [Node.js](https://nodejs.org/) (with NPM)
-* [Bower](https://bower.io/)
 * [Ember CLI](https://ember-cli.com/)
 * [PhantomJS](http://phantomjs.org/)
 
 ## Installation
 
-* `git clone <repository-url>` this repository
+* `git clone https://github.com/rwjblue/heimdalljs-visualizer.git`
 * `cd heimdalljs-visualizer`
-* `npm install`
-* `bower install`
+* `yarn install`
 
 ## Running / Development
 

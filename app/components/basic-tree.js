@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 // Import the D3 packages we want to use
 import { select, event } from 'd3-selection';
-import { tree, cluster, hierarchy } from 'd3-hierarchy';
+import { cluster, hierarchy } from 'd3-hierarchy';
 import { zoom, zoomIdentity } from 'd3-zoom';
 
 const { run, get, inject } = Ember;
