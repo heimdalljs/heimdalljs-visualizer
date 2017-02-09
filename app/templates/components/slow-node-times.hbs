@@ -31,7 +31,7 @@
   </thead>
   <tbody>
     {{#each nodes as |node|}}
-      <tr {{action 'toggleDetailsForNode' node}}>
+      <tr class="table-row" {{action 'toggleDetailsForNode' node}}>
         <td>{{node.label.name}}</td>
         <td>{{node.label.broccoliPluginName}}</td>
         <td>{{ns-to-ms node._stats.time.plugin}}</td>
@@ -45,6 +45,7 @@
                   Node Stats
                 </p>
               </header>
+
               <div class="card-content">
                 {{#each-in (stats-iterator node) as |stat value|}}
                   <div>
@@ -57,8 +58,11 @@
                   </div>
                 {{/each-in}}
               </div>
+
+              <div class="card-footer">
+                <a class="card-footer-item" {{action 'focus-node' node}}>Show Graph</a>
+              </div>
             </div>
-            <button class="button" {{action 'focus-node' node}}>Show Graph</button>
           </td>
         </tr>
       {{/if}}

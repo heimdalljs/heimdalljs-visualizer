@@ -33,6 +33,7 @@ body {
   padding-bottom: 100%;
   vertical-align: top;
   overflow: hidden;
+  cursor: move;
 }
 
 .svg-content {
@@ -40,4 +41,8 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.table-row:hover {
+  cursor: pointer;
 }
