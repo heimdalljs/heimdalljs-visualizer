@@ -1,18 +1,27 @@
-<section class="hero is-light">
+<section class="global-nav hero is-light">
   <nav class="nav">
     <div class="nav-left">
-      {{link-to 'Home' 'index' class="nav-item is-tab" activeClass="is-active"}}
-      {{link-to 'Slow Nodes' 'slow-nodes' class="nav-item is-tab" activeClass="is-active"}}
-      <a class="nav-item" {{action (action (mut showUploadModal) true)}}>
-        Select Data
-      </a>
+      {{link-to 'Graph' 'index' class="nav-item is-tab" activeClass="is-active"}}
+      {{link-to 'Nodes' 'slow-nodes' class="nav-item is-tab" activeClass="is-active"}}
     </div>
+
     <div class="nav-center">
       <p class="nav-item title">
         Heimdall Visualizer
       </p>
     </div>
+
     <div class="nav-right">
+      {{#if (not graph.data)}}
+        <a href="#" class="nav-item" {{action (action (mut showUploadModal) true)}}>
+          Upload Data
+        </a>
+      {{else}}
+        <a href="#" class="nav-item" {{action 'clearData'}}>
+          Clear Data
+        </a>
+      {{/if}}
+
       <a class="nav-item" href="https://github.com/rwjblue/heimdalljs-visualizer">
         <span class="icon">
           <i class="fa fa-github"></i>

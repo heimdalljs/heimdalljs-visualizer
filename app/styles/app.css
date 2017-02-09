@@ -1,3 +1,14 @@
+body {
+  margin-top: 3.5rem;
+}
+
+.global-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
 .node text {
   font: 10px sans-serif;
 }
@@ -17,6 +28,7 @@
   vertical-align: top;
   overflow: hidden;
 }
+
 .svg-content {
   display: inline-block;
   position: absolute;

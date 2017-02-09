@@ -41,6 +41,11 @@ export default Ember.Service.extend({
     this.set('graph', graph);
   },
 
+  clearGraph() {
+    this.set('data', null);
+    this.set('graph', null);
+  },
+
   selectNode(node) {
     sessionStorage.setItem(SELECTED_NODE_STORAGE_KEY, node.id);
 

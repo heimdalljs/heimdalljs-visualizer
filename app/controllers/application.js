@@ -29,6 +29,10 @@ export default Ember.Controller.extend({
           this.get('graph').setGraph(contents);
           this.set('showUploadModal', false);
         });
+    },
+
+    clearData() {
+      this.get('graph').clearGraph();
     }
   }
 })
