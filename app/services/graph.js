@@ -35,7 +35,9 @@ export default Ember.Service.extend({
 
     try {
       sessionStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {}
+    } catch (e) {
+      // ignore errors from sessionStorage
+    }
 
     this.set('data', data);
     this.set('graph', graph);
@@ -44,6 +46,9 @@ export default Ember.Service.extend({
   clearGraph() {
     this.set('data', null);
     this.set('graph', null);
+
+    sessionStorage.removeItem(DATA_STORAGE_KEY);
+    sessionStorage.removeItem(SELECTED_NODE_STORAGE_KEY);
   },
 
   selectNode(node) {
