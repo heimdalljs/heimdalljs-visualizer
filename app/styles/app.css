@@ -15,6 +15,13 @@ body {
   width: 100%;
 }
 
+.selected-node-controls {
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  bottom: 0;
+}
+
 .node text {
   font: 10px sans-serif;
 }

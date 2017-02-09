@@ -1,0 +1,18 @@
+{{#if graph.selectedNode}}
+  {{basic-tree graphData=graph.selectedNode nodeFilter=null}}
+{{else}}
+  <section class="upload-data-banner hero is-fullheight is-light">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        {{#link-to 'slow-nodes'}}
+          <h1 class="title">
+            <i class="fa fa-exclamation-triangle"></i>
+          </h1>
+          <h2 class="subtitle">
+            Please select a node from the Nodes page.
+          </h2>
+        {{/link-to}}
+      </div>
+    </div>
+  </section>
+{{/if}}

@@ -50,6 +50,6 @@ export default Ember.Service.extend({
     sessionStorage.setItem(SELECTED_NODE_STORAGE_KEY, node.id);
 
     this.set('selectedNode', node);
-    getOwner(this).lookup('router:main').transitionTo('selected-node');
+    getOwner(this).lookup('router:main').transitionTo('graph.node');
   }
 });
