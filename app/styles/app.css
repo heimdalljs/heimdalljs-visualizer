@@ -9,6 +9,12 @@ body {
   z-index: 1;
 }
 
+.upload-data-banner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
 .node text {
   font: 10px sans-serif;
 }
