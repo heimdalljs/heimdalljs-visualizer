@@ -21,16 +21,19 @@
   </div>
 </div>
 
-<table class="table is-striped">
-  <thead>
+<table class="nodes-table table is-striped">
+  <thead class="nodes-table_header">
     <tr>
       <td style="width: 65%">Description</td>
       <td>{{if groupByPluginName "Count" "Plugin Name"}}</td>
-      <td>Time (ms)</td>
+      <td>
+        <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
+      </td>
     </tr>
   </thead>
+
   <tbody>
-    {{#each nodes as |node|}}
+    {{#each sortedNodes as |node|}}
       <tr class="table-row" {{action 'toggleDetailsForNode' node}}>
         <td>{{node.label.name}}</td>
         <td>{{node.label.broccoliPluginName}}</td>

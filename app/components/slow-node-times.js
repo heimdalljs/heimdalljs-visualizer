@@ -27,6 +27,8 @@ function nodeTime(node) {
 export default Ember.Component.extend({
   graph: inject.service(),
 
+  sortDescending: true,
+
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
     if (!data) { return []; }
@@ -74,12 +76,17 @@ export default Ember.Component.extend({
       }
     }
 
-    let sortedNodes = nodes
-        .sort((a, b) => {
-          return b._stats.time.plugin - a._stats.time.plugin;
-        });
+    return nodes;
+  }),
 
-    return sortedNodes;
+  sortedNodes: computed('nodes', 'sortDescending', function() {
+    return this.get('nodes').sort((a, b) => {
+      if (this.get('sortDescending')) {
+        return b._stats.time.plugin - a._stats.time.plugin;
+      } else {
+        return a._stats.time.plugin - b._stats.time.plugin;
+      }
+    });
   }),
 
   totalTime: computed('nodes', function() {
@@ -103,6 +110,10 @@ export default Ember.Component.extend({
         let shown = get(node, 'showDetails');
         set(node, 'showDetails', !shown);
       }
+    },
+
+    toggleTime() {
+      this.toggleProperty('sortDescending');
     }
   }
 });

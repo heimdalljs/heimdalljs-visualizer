@@ -50,6 +50,14 @@ body {
   left: 0;
 }
 
+.nodes-table_header tr:hover {
+  background-color: initial;
+}
+
+.nodes-table_toggle {
+  color: inherit;
+}
+
 .table-row:hover {
   cursor: pointer;
 }
