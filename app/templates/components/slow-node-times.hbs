@@ -1,10 +1,13 @@
-<div class="level">
+<div class="nodes-controls level is-marginless">
   <div class="level-left">
     <div class="level-item">
-      <p class="control">
-        {{input value=pluginNameFilter placeholder="Filter by plugin name..."}}
+      <p class="control has-addons">
+        {{input class="input" value=pluginNameFilter placeholder="Filter by plugin name..."}}
+
+        <button class="button is-primary {{if (not pluginNameFilter) 'is-disabled'}}" {{action (action (mut pluginNameFilter) '')}}>Clear</button>
       </p>
     </div>
+
     <div class="level-item">
       <p class="control">
         <label class="checkbox">
@@ -13,11 +16,6 @@
         </label>
       </p>
     </div>
-  </div>
-  <div class="level-right">
-    <p class="control">
-      <button class="button" {{action (action (mut pluginNameFilter) '')}}>Clear</button>
-    </p>
   </div>
 </div>
 

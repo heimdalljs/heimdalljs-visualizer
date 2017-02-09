@@ -50,6 +50,11 @@ body {
   left: 0;
 }
 
+.nodes-controls {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
 .nodes-table_header tr:hover {
   background-color: initial;
 }
