@@ -6,6 +6,9 @@ var MergeTrees = require('broccoli-merge-trees');
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     // Add options here
+    vendorFiles: {
+      'jquery.js': null
+    },
     trees: {
       vendor: new MergeTrees([
         'node_modules/heimdalljs-graph',
