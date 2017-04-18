@@ -2317,9 +2317,9 @@ ember-cli-babel@^6.0.0-beta.3, ember-cli-babel@^6.0.0-beta.4, ember-cli-babel@^6
     clone "^2.0.0"
     ember-cli-version-checker "^1.2.0"
 
-ember-cli-babili@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/ember-cli-babili/-/ember-cli-babili-0.1.0.tgz#03e2151ac47f1b8db6c117560a1fd5e0b00097bf"
+ember-cli-babili@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/ember-cli-babili/-/ember-cli-babili-0.1.1.tgz#53a0af1e8f3b95c357a90bcd02e06dde2ea1c21b"
   dependencies:
     babel-preset-babili "0.0.12"
     broccoli-babel-transpiler "^6.0.0"
