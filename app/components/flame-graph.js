@@ -60,8 +60,8 @@ export default Ember.Component.extend({
       subTree = this.convert(child);
       if (subTree) {
         node.children.push(subTree);
+        treeValue += subTree.treeValue;
       }
-      treeValue += subTree.treeValue;
     }
     node.treeValue = treeValue;
     node.time = this.formatTime(node.treeValue);
@@ -81,7 +81,7 @@ export default Ember.Component.extend({
       for (let p in obj) {
         if (obj.hasOwnProperty(p) && p !== 'own') {
           if (typeof obj[p] === 'object') {
-            if (p !== 'time') {
+            if (p !== 'time' || (p === 'time' && Object.keys(obj[p]).length > 1)) {
               let padded = p + pad.repeat(13).substring(0, pad.length * 13 - p.length * 6);
               str += '&nbsp;'.repeat(indent) + padded + (indent <= 0 ? '<br/>' : '') + objToString(obj[p]);
             }
@@ -105,8 +105,7 @@ export default Ember.Component.extend({
       let time = _this.formatTime(d.data.treeValue);
       let percent = " [" + (((d.data.treeValue / _this.get('totalTime')) * 100).toFixed(1)) + "%]";
       let self = " (self: " + _this.formatTime(d.data.stats.time.self) + ")";
-      let res = d.data.name + "<br/>" + time + percent + self + "<br/>" + objToString(d.data.stats);
-      return res;
+      return d.data.name + "<br/>" + time + percent + self + "<br/>" + objToString(d.data.stats);
     };
 
     let clientHeight = document.getElementsByClassName('flame-graph')[0].clientHeight;

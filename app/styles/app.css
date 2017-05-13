@@ -1,16 +1,10 @@
 body {
-  /*margin-top: 3.5rem;*/
+  margin-top: 3.5rem;
 }
 
 html,
-body {
-  height: 100%;
-}
-
-body > [class="ember-view"] {
-  height: 100%;
-}
-
+body,
+body > [class="ember-view"],
 .flame-graph {
   height: 100%;
 }
@@ -55,7 +49,7 @@ body > [class="ember-view"] {
   display: inline-block;
   position: relative;
   width: 100%;
-  /*padding-bottom: 100%;*/
+  padding-bottom: 100%;
   vertical-align: top;
   overflow: hidden;
   cursor: move;
