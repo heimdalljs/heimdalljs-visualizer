@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "heimdalljs-visualizer",
   "version": "0.5.0",
   "description": "Small description for heimdalljs-visualizer goes here",
@@ -18,7 +18,8 @@
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
-    "ember-cli": "^2.13.0-beta.1",
+    "d3-tip": "Caged/d3-tip#pull/198/head",
+    "ember-cli": "^2.13.0-beta.3",
     "ember-cli-app-version": "^3.0.0",
     "ember-cli-babel": "^6.0.0-beta.3",
     "ember-cli-dependency-checker": "^1.3.0",
@@ -33,6 +34,8 @@
     "ember-cli-shims": "^1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "^2.1.0",
+    "ember-data": "^2.13.0-beta.1",
+    "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.0.0",
     "ember-resolver": "^4.1.0",
     "ember-source": "~2.13.0-beta.2",
@@ -40,15 +43,16 @@
     "loader.js": "^4.2.3"
   },
   "engines": {
-    "node": ">= 0.12.0"
+    "node": ">= 4"
   },
   "private": true,
   "dependencies": {
     "broccoli-merge-trees": "^2.0.0",
     "bulma": "^0.3.1",
+    "d3-flame-graphs": "^3.1.0",
     "ember-cli-babili": "^0.1.1",
-    "ember-d3": "^0.3.1",
     "ember-fetch": "^1.4.2",
+    "ember-d3": "^0.3.2",
     "ember-font-awesome": "^3.0.1",
     "ember-native-dom-event-dispatcher": "^0.6.0",
     "ember-truth-helpers": "^1.2.0",

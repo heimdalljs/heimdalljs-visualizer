@@ -1,5 +1,21 @@
 body {
-  margin-top: 3.5rem;
+  /*margin-top: 3.5rem;*/
+}
+
+html,
+body {
+  height: 100%;
+  /*height: calc(100% - 3.7rem);*/
+}
+
+body > [class="ember-view"] {
+  /*height: calc(100% - 3.7rem);*/
+  height: 100%;
+}
+
+.flame-graph {
+  /*height: calc(100% - 3.7rem);*/
+  height: 100%;
 }
 
 .global-nav {
@@ -37,7 +53,7 @@ body {
   display: inline-block;
   position: relative;
   width: 100%;
-  padding-bottom: 100%;
+  /*padding-bottom: 100%;*/
   vertical-align: top;
   overflow: hidden;
   cursor: move;
@@ -66,3 +82,4 @@ body {
 .table-row:hover {
   cursor: pointer;
 }
+

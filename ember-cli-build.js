@@ -2,8 +2,20 @@
 /* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var MergeTrees = require('broccoli-merge-trees');
+var path = require('path');
+var Funnel = require('broccoli-funnel');
 
 module.exports = function(defaults) {
+  var flameTree = new Funnel(path.dirname(require.resolve('d3-flame-graphs/dist/d3-flame-graph.js')), {
+    files: ['d3-flame-graph.js', 'd3-flame-graph.css'],
+    destDir: 'd3-flame-graphs'
+  });
+
+  var tipTree = new Funnel(path.dirname(require.resolve('d3-tip/index.js')), {
+    files: ['index.js'],
+    destDir: 'd3-tip'
+  });
+
   var app = new EmberApp(defaults, {
     // Add options here
     vendorFiles: {
@@ -13,6 +25,9 @@ module.exports = function(defaults) {
       vendor: new MergeTrees([
         'node_modules/heimdalljs-graph',
         'node_modules/bulma',
+        'vendor/shims',
+        tipTree,
+        flameTree,
       ], { overwrite: true })
     }
   });
@@ -31,7 +46,18 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/dist/amd/heimdalljs-graph.js');
-  app.import('vendor/css/bulma.css');
 
+  app.import('vendor/d3-flame-graphs/d3-flame-graph.js', {
+    using: [
+      { transformation: 'amd', as: 'd3-flame-graph' }
+    ]
+  });
+  app.import('vendor/d3-flame-graphs/d3-flame-graph.css');
+  app.import('vendor/d3-tip/index.js', {
+    using: [
+      { transformation: 'amd', as: 'd3-tip' }
+    ]
+  });
+  app.import('vendor/css/bulma.css');
   return app.toTree();
 };
