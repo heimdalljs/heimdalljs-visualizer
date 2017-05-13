@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "heimdalljs-visualizer",
   "version": "0.5.0",
   "description": "Small description for heimdalljs-visualizer goes here",
@@ -34,8 +34,6 @@
     "ember-cli-shims": "^1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "^2.1.0",
-    "ember-data": "^2.13.0-beta.1",
-    "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.0.0",
     "ember-resolver": "^4.1.0",
     "ember-source": "~2.13.0-beta.2",
@@ -51,8 +49,8 @@
     "bulma": "^0.3.1",
     "d3-flame-graphs": "^3.1.0",
     "ember-cli-babili": "^0.1.1",
-    "ember-fetch": "^1.4.2",
     "ember-d3": "^0.3.2",
+    "ember-fetch": "^1.4.2",
     "ember-font-awesome": "^3.0.1",
     "ember-native-dom-event-dispatcher": "^0.6.0",
     "ember-truth-helpers": "^1.2.0",

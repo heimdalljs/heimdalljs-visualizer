@@ -1,10 +1,4 @@
 import Ember from 'ember';
-// import require from 'require';
-// Import the D3 packages we want to use
-// import gFlameGraph from '../../vendor/shims/d3-flame-graphs';
-// import gFlameGraph from 'npm:d3-flame-graphs';
-// const gFlameGraph = require('d3-flame-graphs/dist/d3-flame-graph');
-// import d3 from 'd3';
 import FlameGraph from '../utils/d3-flame-graphs-v4/d3-flame-graph';
 
 const { run, get, inject } = Ember;
@@ -13,6 +7,7 @@ export default Ember.Component.extend({
   classNames: ['flame-graph'],
   graph: inject.service(),
   flameGraph: null,
+  totalTime: Ember.computed.alias('graph.data.summary.totalTime'),
 
   init() {
     this._super(...arguments);
@@ -24,18 +19,23 @@ export default Ember.Component.extend({
     this._scheduleDraw();
   },
 
-  // didInsertElement() {
-  //   this._scheduleDraw();
-  // },
-
   _scheduleDraw() {
-    // let graphData = get(this, 'graphData');
     let graphData = get(this, 'graph.graph');
 
     if (this._lastGraphData !== graphData && graphData) {
       run.schedule('render', this, this.drawFlame, graphData);
 
       this._lastGraphData = graphData;
+    }
+  },
+
+  formatTime(ms) {
+    if (ms > 1000000000) {
+      return (Math.round(ms / 1000000000 * 100) / 100).toFixed(1) + 's';
+    } else if (ms > 1000000) {
+      return (Math.round(ms / 1000000 * 100) / 100).toFixed(0) + 'ms';
+    } else {
+      return (Math.round(ms / 1000000 * 100) / 100).toFixed(1) + 'ms';
     }
   },
 
@@ -64,30 +64,36 @@ export default Ember.Component.extend({
       treeValue += subTree.treeValue;
     }
     node.treeValue = treeValue;
+    node.time = this.formatTime(node.treeValue);
+    node.percent = ((node.treeValue / this.get('totalTime')) * 100).toFixed(1) + "%";
     return node;
   },
 
   drawFlame(data) {
+    let _this = this;
     let profile = this.convert(data);
-    console.log('profile: ', profile);
-    let indent = 0;
 
-    let formatTime = function(ms) {
-      if (ms > 1000000000) {
-        return (ms / 1000000000).toFixed(3) + 's';
-      }
-      return (ms / 1000000).toFixed(1) + 'ms';
-    };
+    let indent = -1;
     let objToString = function(obj) {
       indent++;
       let str = '';
+      let pad = "&nbsp;";
       for (let p in obj) {
         if (obj.hasOwnProperty(p) && p !== 'own') {
           if (typeof obj[p] === 'object') {
-            str += '&nbsp;'.repeat(indent) + p + ': ' + (indent <= 1 && p !== 'time' ? '<br/>' : '') + objToString(obj[p]);
+            if (p !== 'time') {
+              let padded = p + pad.repeat(13).substring(0, pad.length * 13 - p.length * 6);
+              str += '&nbsp;'.repeat(indent) + padded + (indent <= 0 ? '<br/>' : '') + objToString(obj[p]);
+            }
           } else {
-            str += '&nbsp;'.repeat(indent) + p + ': ' + ((p === 'time' || p === 'self') ? formatTime(obj[p]) : obj[p]);
-            str += p !== 'count' ? '<br/>' : '';
+            if (p === 'count') {
+              let padded = pad.repeat(5).substring(0, pad.length * 5 - obj[p].toString().length * 6) + obj[p];
+              str += padded;
+            } else if (p === 'time') {
+              let time = _this.formatTime(obj[p]);
+              let padded = ' ' + pad.repeat(8).substring(0, pad.length * 8 - time.length * 6) + time + '<br/>';
+              str += padded;
+            }
           }
         }
       }
@@ -96,20 +102,23 @@ export default Ember.Component.extend({
     };
 
     let tooltip = function(d) {
-      return "" + d.data.name + " <br/><br/>" + formatTime(d.data.treeValue) + " (" + (((d.data.treeValue / profile.treeValue) * 100).toFixed(2)) + "% of total)<br/>" +
-        objToString(d.data.stats);
+      let time = _this.formatTime(d.data.treeValue);
+      let percent = " [" + (((d.data.treeValue / _this.get('totalTime')) * 100).toFixed(1)) + "%]";
+      let self = " (self: " + _this.formatTime(d.data.stats.time.self) + ")";
+      let res = d.data.name + "<br/>" + time + percent + self + "<br/>" + objToString(d.data.stats);
+      return res;
     };
 
     let clientHeight = document.getElementsByClassName('flame-graph')[0].clientHeight;
+    clientHeight -= clientHeight % 20;
     let clientWidth = document.getElementsByClassName('flame-graph')[0].clientWidth;
 
     this.flameGraph = new FlameGraph('#d3-flame-graph', profile, true)
-    // .size([clientWidth, clientHeight - 3])
-      .size([1343, 640])
+      .size([clientWidth, clientHeight])
       .cellHeight(20)
       .zoomEnabled(true)
-      .zoomAction(function(node, event) {
-        return console.log('ZoomAction: ', node, event);
-      }).tooltip(tooltip).render();
+      .zoomAction((node, event) => console.log('Zoom: ', node, event))
+      .labelFunction(d => d.data.name + ' [' + d.data.time + ' / ' + d.data.percent + ']')
+      .tooltip(tooltip).render();
   }
 });

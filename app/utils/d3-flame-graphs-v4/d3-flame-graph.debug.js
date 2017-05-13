@@ -5,6 +5,18 @@ import { transition } from 'd3-transition';
 import d3Tip from 'd3-tip';
 import { partition, hierarchy } from 'd3-hierarchy';
 
+var logData = {};
+var logIndex = 0;
+let logIt = function() {
+  let args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
+  if (args) {
+    let label = args.splice(0, 1).toString();
+    // logData[logIndex++ + ' ' + label] = args;
+    logData[logIndex++ + ' ' + label] = args;
+    console.log(label, args[0], args[1], args[2], args[3], args[4]);
+  }
+};
+
 let indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; }
     return -1;
@@ -37,6 +49,7 @@ let hash = function(name) {
 
 const FlameGraphUtils = {
   augment(node, location) {
+    // logIt('Augment:', ...arguments);
     let childSum;
     let children;
     children = node.children;
@@ -55,6 +68,7 @@ const FlameGraphUtils = {
       return sum + child.value;
     }), 0);
     if (childSum < node.value) {
+      logIt('Filler created with value:', node.value - childSum);
       children.push({
         value: node.value - childSum,
         filler: true
@@ -63,9 +77,11 @@ const FlameGraphUtils = {
     children.forEach((child, idx) => FlameGraphUtils.augment(child, location + "." + idx));
     node.level += children.reduce(((max, child) => Math.max(child.level, max)), 0);
     node.augmented = true;
+    // logIt('Augment result:', node);
     return node;
   },
   partition(data) {
+    logIt('Partition:', ...arguments);
     let d3partition = partition();
 
     let root = hierarchy(data)
@@ -80,8 +96,12 @@ const FlameGraphUtils = {
         return a.data.name.localeCompare(b.data.name);
       });
     return d3partition(root).descendants();
+    // let res = d3partition(root).descendants();
+    // logIt('Partition result:', res);
+    // return res;
   },
   hide(nodes, unhide) {
+    logIt('Utils::Hide:', ...arguments);
     let process;
     let processChildren;
     let processParents;
@@ -135,6 +155,7 @@ const FlameGraphUtils = {
 };
 class FlameGraph {
   constructor(selector, root, debug) {
+    logIt('Constructor:', ...arguments);
     this._selector = selector;
     this._generateAccessors(['margin', 'cellHeight', 'zoomEnabled', 'zoomAction', 'tooltip', 'tooltipPlugin', 'color', 'labelFunction']);
     this._ancestors = [];
@@ -187,6 +208,7 @@ class FlameGraph {
   }
 
   root(root) {
+    logIt('Root:', ...arguments);
     if (!root) {
       return this._root;
     }
@@ -199,6 +221,7 @@ class FlameGraph {
   }
 
   hide(predicate, unhide) {
+    logIt('Hide:', ...arguments);
     let matches;
     if (unhide == null) {
       unhide = false;
@@ -213,6 +236,7 @@ class FlameGraph {
   }
 
   zoom(node, event) {
+    logIt('Zoom:', ...arguments);
     if (!this.zoomEnabled()) {
       throw new Error("Zoom is disabled!");
     }
@@ -249,6 +273,7 @@ class FlameGraph {
   }
 
   select(predicate, onlyVisible) {
+    logIt('Select:', ...arguments);
     let result;
     if (onlyVisible == null) {
       onlyVisible = true;
@@ -262,6 +287,8 @@ class FlameGraph {
   }
 
   render() {
+    logIt('Render:', ...arguments);
+    logIt('_data: ', this._data);
     let data;
     let existingContainers;
     let maxLevels;
@@ -278,36 +305,62 @@ class FlameGraph {
     }
     this.fontSize = (this.cellHeight() / 10) * 0.4;
 
-    this.x = scaleLinear().domain([0, max(this._data, d => d.x1)]).range([0, this.width()]);
+    console.log(this._data.map(d => d.data.name + ': ' + d.x0));
+    logIt('sL min x0: ', min(this._data, d => d.x0), 'max: ', max(this._data, d => d.x1));
+    let minX = this._rootNode.x0;
+    let maxX = this._rootNode.x1;
+
+    this.x = scaleLinear().domain([
+      0, max(this._data, function(d) {
+        // logIt('..scaleLinear max d:', d.data.name, d.x0, d.x1, d);
+        return d.x1;
+      })
+    ]).range([0, this.width()]);
+
+    logIt('minX:', minX, 'maxX:', maxX, this.x(minX), this.x(maxX), this._rootNode);
+    logIt('root: ', this._root);
 
     visibleCells = Math.floor(this.height() / this.cellHeight());
     maxLevels = this._root.level;
+    // console.log('maxLevels: ', maxLevels, 'min y0: ', min(this._data, d => d.y0), 'max: ', max(this._data, d => d.y0), 'range: ',
+    // range(maxLevels));
 
-    this.y = scaleQuantize().domain([min(this._data, d => d.y0), max(this._data, d => d.y0)]).range(range(maxLevels).map((function(_this) {
+    this.y = scaleQuantize().domain([
+      min(this._data, d => d.y0), max(this._data, function(d) {
+        // logIt('..scaleQuantize max d:', d.data.name, d.y0, d.y1, d);
+        return d.y0;
+      })
+    ]).range(range(maxLevels).map((function(_this) {
       return function(cell) {
+        // logIt('..scaleQuantize range:', cell, (visibleCells - 1 - cell - (_this._ancestors.length)) * _this.cellHeight());
         return (visibleCells - 1 - cell - _this._ancestors.length) * _this.cellHeight();
       };
     })(this)));
 
+    // logIt('after sQ this._data: ', this._data);
     data = this._data.filter((function(_this) {
       return function(d) {
         return _this.x(d.x1 - d.x0) > 0.4 && _this.y(d.y0) >= 0 && !d.data.filler;
       };
     })(this));
+    logIt('after filter this._data: ', data);
     renderNode = {
       x: (function(_this) {
         return function(d) {
           return _this.x(d.x0);
+          // logIt('.. renderNode x:', d.data.name, d.x0, d.x1, res, d);
         };
       })(this),
       y: (function(_this) {
         return function(d) {
           return _this.y(d.y0);
+          // logIt('.. renderNode y:', d.data.name, d.y0, res, d);
         };
       })(this),
       width: (function(_this) {
         return function(d) {
           let res = _this.x(d.x1 - d.x0);
+          logIt('.. renderNode width:', d.data.name, d.x0, d.x1, d.x1 - d.x0, res, d);
           return res;
         };
       })(this),
@@ -324,9 +377,16 @@ class FlameGraph {
         };
       })(this)
     };
+    logIt('container:', this.container);
+    let nodes = this.container.selectAll('.node');
+    let ndata = nodes.data(data, d => d.data.location);
+    logIt('selectAll nodes, data:', nodes, ndata);
     existingContainers = this.container.selectAll('.node').data(data, d => d.data.location).attr('class', 'node');
+
+    logIt('existingContainers:', existingContainers);
     this._renderNodes(existingContainers, renderNode, false, data);
     newContainers = existingContainers.enter().append('g').attr('class', 'node');
+    logIt('newContainers:', newContainers);
     this._renderNodes(newContainers, renderNode, true, data);
     existingContainers.exit().remove();
     if (this.zoomEnabled()) {
@@ -337,10 +397,12 @@ class FlameGraph {
     }
     this.console.timeEnd('render');
     this.console.log(`Processed ${this._data.length} items`);
+    // this.console.log("Rendered " + ((ref = this.container.selectAll('.node')[0]) != null ? ref.length : void 0) + " elements");
     return this;
   }
 
   _createContainer() {
+    logIt('_createContainer:', ...arguments);
     let offset;
     let svg;
     select(this._selector).select('svg').remove();
@@ -351,6 +413,7 @@ class FlameGraph {
   }
 
   _renderNodes(containers, attrs, enter, data) {
+    logIt('_renderNodes:', ...arguments);
     let targetLabels;
     let targetRects;
     if (enter == null) {
@@ -363,12 +426,14 @@ class FlameGraph {
       targetRects = containers.append('rect');
     }
 
+    logIt('targetRects before: ', targetRects);
     targetRects.data(data, d => d.data ? d.data.location : d.location).attr('fill', (function(_this) {
       return function(d) {
         return _this._color(d);
       };
     })(this)).transition().attr('width', attrs.width).attr('height', this.cellHeight()).attr('x', attrs.x).attr('y', attrs.y);
 
+    logIt('targetRects after: ', targetRects);
     if (!enter) {
       targetLabels = containers.selectAll('text');
     }
@@ -384,6 +449,7 @@ class FlameGraph {
       };
     })(this)).attr('y', (function(_this) {
       return function(d, idx) {
+        // logIt('label:', d.data ? d.data.name : d.name, idx, attrs.y(d, idx) + (_this._ancestors.length * _this.cellHeight()) +
         return attrs.y(d, idx) + _this.cellHeight() / 2;
       };
     })(this)).text(attrs.text);
@@ -391,6 +457,7 @@ class FlameGraph {
   }
 
   _renderTooltip() {
+    logIt('RenderTooltip:', ...arguments);
     if (!this._tooltipPlugin || !this._tooltipEnabled) {
       return this;
     }
@@ -431,6 +498,7 @@ class FlameGraph {
   }
 
   _renderAncestors() {
+    logIt('RenderAncestors:', ...arguments);
     let ancestor;
     let ancestorData;
     let ancestors;
@@ -476,10 +544,32 @@ class FlameGraph {
         };
       })(this)
     };
+    // ancestors = this.container.selectAll('.ancestor').data(d3.layout.partition().nodes(ancestorData[0]), function(d) {
+    //   return d.location;
+    // });
 
     ancestors = this.container.selectAll('.ancestor').data(
+      // partition()(hierarchy(ancestorData[0])
+      //   .sum(d => d.data ? d.data.value : d.value)
+      //   .sort((a, b) => {
+      //     if (a.filler) {
+      //       return 1;
+      //     }
+      //     if (b.filler) {
+      //       return -1;
+      //     }
+      //     return a.data.name.localeCompare(b.data.name);
+      //   })).descendants(), d => d.location
+
       FlameGraphUtils.partition(ancestorData[0]), d => d.location
+      // FlameGraphUtils.partition(this._ancestors[0]), d => d.location
+      // partition().nodes(ancestorData[0]), d => d.location
     );
+
+    // let anc = hierarchy(ancestorData[0]).sum(d => d.value);
+    // ancestors = this.container.selectAll('.ancestor').data(
+    //   partition(anc).descendants(), d => d.location
+    // );
 
     this._renderNodes(ancestors, renderAncestor, false, ancestorData);
     newAncestors = ancestors.enter().append('g').attr('class', 'ancestor');
@@ -489,6 +579,8 @@ class FlameGraph {
   }
 
   _enableNavigation() {
+    logIt('EnableNavigation:', ...arguments);
+
     let clickable;
     clickable = ((_this => d => {
       let ref;
@@ -513,10 +605,12 @@ class FlameGraph {
   }
 
   _generateAccessors(accessors) {
+    logIt('GenerateAccessors:', ...arguments);
     let accessor;
     let j;
     let len;
-    let results = [];
+    let results;
+    results = [];
     for (j = 0, len = accessors.length; j < len; j++) {
       accessor = accessors[j];
       results.push(this[accessor] = ((accessor => function(newValue) {

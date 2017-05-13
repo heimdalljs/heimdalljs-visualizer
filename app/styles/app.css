@@ -5,17 +5,19 @@ body {
 html,
 body {
   height: 100%;
-  /*height: calc(100% - 3.7rem);*/
 }
 
 body > [class="ember-view"] {
-  /*height: calc(100% - 3.7rem);*/
   height: 100%;
 }
 
 .flame-graph {
-  /*height: calc(100% - 3.7rem);*/
   height: 100%;
+}
+
+.d3-tip {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 13px;
 }
 
 .global-nav {
