@@ -1,9 +1,9 @@
 body {
   margin-top: 3.5rem;
+  height: calc(100% - 3.55rem);
 }
 
 html,
-body,
 body > [class="ember-view"],
 .flame-graph {
   height: 100%;
