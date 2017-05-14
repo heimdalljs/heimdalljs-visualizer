@@ -19,6 +19,10 @@ let getClassAndMethodName = function(fqdn) {
   return tokens.slice(tokens.length - 2).join(".");
 };
 
+// Return a vector (0.0 -> 1.0) that is a hash of the input string.
+// The hash is computed to favor early characters over later ones, so
+// that strings with similar starts have similar vectors. Only the first
+// 6 characters are considered.
 let hash = function(name) {
   let i, j, maxHash, mod, ref, ref1, result, weight;
   ref = [0, 0, 1, 10], result = ref[0], maxHash = ref[1], weight = ref[2], mod = ref[3];
@@ -36,10 +40,13 @@ let hash = function(name) {
 };
 
 const FlameGraphUtils = {
+  // augments each node in the tree with the maximum distance
+  // it is from a terminal node, the list of parents linking
+  // it to the root and filler nodes that balance the representation
   augment(node, location) {
-    let childSum;
-    let children;
-    children = node.children;
+    let children = node.children;
+    // d3.partition adds the reverse (depth), here we store the distance
+    // between a node and its furthest leaf
     if (node.augmented) {
       return node;
     }
@@ -51,7 +58,7 @@ const FlameGraphUtils = {
       node.augmented = true;
       return node;
     }
-    childSum = children.reduce((function(sum, child) {
+    let childSum = children.reduce((function(sum, child) {
       return sum + child.value;
     }), 0);
     if (childSum < node.value) {
@@ -72,33 +79,28 @@ const FlameGraphUtils = {
       .sum(d => d.data ? d.data.value : d.value)
       .sort((a, b) => {
         if (a.filler) {
-          return 1;
+          return 1;  // move fillers to the right
         }
         if (b.filler) {
-          return -1;
+          return -1; // move fillers to the right
         }
         return a.data.name.localeCompare(b.data.name);
       });
     return d3partition(root).descendants();
   },
   hide(nodes, unhide) {
-    let process;
-    let processChildren;
-    let processParents;
-    let remove;
-    let sum;
     if (unhide === null) {
       unhide = false;
     }
-    sum = arr => arr.reduce(((acc, val) => acc + val), 0);
-    remove = (arr, val) => {
-      let pos;
-      pos = arr.indexOf(val);
+    let sum = arr => arr.reduce(((acc, val) => acc + val), 0);
+    let remove = (arr, val) => {
+      // we need to remove precisely one occurrence of initial value
+      let pos = arr.indexOf(val);
       if (pos >= 0) {
         return arr.splice(pos, 1);
       }
     };
-    process = (node, val) => {
+    let process = (node, val) => {
       if (unhide) {
         remove(node.hidden, val);
       } else {
@@ -106,7 +108,7 @@ const FlameGraphUtils = {
       }
       return node.value = Math.max(node.originalValue - sum(node.hidden), 0);
     };
-    processChildren = (node, val) => {
+    let processChildren = (node, val) => {
       if (!node.children) {
         return;
       }
@@ -115,9 +117,8 @@ const FlameGraphUtils = {
         return processChildren(child, val);
       });
     };
-    processParents = (node, val) => {
-      let results;
-      results = [];
+    let processParents = (node, val) => {
+      let results = [];
       while (node.parent) {
         process(node.parent, val);
         results.push(node = node.parent);
@@ -125,8 +126,7 @@ const FlameGraphUtils = {
       return results;
     };
     return nodes.forEach(node => {
-      let val;
-      val = node.originalValue;
+      let val = node.originalValue;
       processParents(node, val);
       process(node, val);
       return processChildren(node, val);
@@ -141,6 +141,8 @@ class FlameGraph {
     if (debug == null) {
       debug = false;
     }
+
+    // enable logging only if explicitly specified
     if (debug) {
       this.console = window.console;
     } else {
@@ -150,6 +152,8 @@ class FlameGraph {
         timeEnd() {}
       };
     }
+
+    // defaults
     this._size = [1200, 800];
     this._cellHeight = 20;
     this._margin = {
@@ -171,6 +175,8 @@ class FlameGraph {
     if (this._tooltipEnabled && d3Tip) {
       this._tooltipPlugin = d3Tip();
     }
+
+    // initial processing of data
     this.console.time('augment');
     this.original = FlameGraphUtils.augment(root, '0');
     this.console.timeEnd('augment');
@@ -256,19 +262,13 @@ class FlameGraph {
     if (onlyVisible) {
       return this.container.selectAll('.node').filter(predicate);
     } else {
+      // re-partition the data prior to rendering
       result = FlameGraphUtils.partition(this.original).filter(predicate);
       return result;
     }
   }
 
   render() {
-    let data;
-    let existingContainers;
-    let maxLevels;
-    let newContainers;
-    let ref;
-    let renderNode;
-    let visibleCells;
     if (!this._selector) {
       throw new Error("No DOM element provided");
     }
@@ -276,12 +276,14 @@ class FlameGraph {
     if (!this.container) {
       this._createContainer();
     }
+
+    // reset size and scales
     this.fontSize = (this.cellHeight() / 10) * 0.4;
 
     this.x = scaleLinear().domain([0, max(this._data, d => d.x1)]).range([0, this.width()]);
 
-    visibleCells = Math.floor(this.height() / this.cellHeight());
-    maxLevels = this._root.level;
+    let visibleCells = Math.floor(this.height() / this.cellHeight());
+    let maxLevels = this._root.level;
 
     this.y = scaleQuantize().domain([min(this._data, d => d.y0), max(this._data, d => d.y0)]).range(range(maxLevels).map((function(_this) {
       return function(cell) {
@@ -289,12 +291,13 @@ class FlameGraph {
       };
     })(this)));
 
-    data = this._data.filter((function(_this) {
+    // JOIN
+    let data = this._data.filter((function(_this) {
       return function(d) {
         return _this.x(d.x1 - d.x0) > 0.4 && _this.y(d.y0) >= 0 && !d.data.filler;
       };
     })(this));
-    renderNode = {
+    let renderNode = {
       x: (function(_this) {
         return function(d) {
           return _this.x(d.x0);
@@ -324,10 +327,16 @@ class FlameGraph {
         };
       })(this)
     };
-    existingContainers = this.container.selectAll('.node').data(data, d => d.data.location).attr('class', 'node');
+    let existingContainers = this.container.selectAll('.node').data(data, d => d.data.location).attr('class', 'node');
+
+    // UPDATE
     this._renderNodes(existingContainers, renderNode, false, data);
-    newContainers = existingContainers.enter().append('g').attr('class', 'node');
+
+    // ENTER
+    let newContainers = existingContainers.enter().append('g').attr('class', 'node');
     this._renderNodes(newContainers, renderNode, true, data);
+
+    // EXIT
     existingContainers.exit().remove();
     if (this.zoomEnabled()) {
       this._renderAncestors()._enableNavigation();
@@ -341,13 +350,23 @@ class FlameGraph {
   }
 
   _createContainer() {
-    let offset;
-    let svg;
+    // remove any previously existing svg
     select(this._selector).select('svg').remove();
-    svg = select(this._selector).append('svg').attr('class', 'flame-graph').attr('width', this._size[0]).attr('height', this._size[1]);
-    offset = `translate(${this.margin().left}, ${this.margin().top})`;
+    // create main svg container
+    let svg = select(this._selector).append('svg').attr('class', 'flame-graph').attr('width', this._size[0]).attr('height', this._size[1]);
+    // we set an offset based on the margin
+    let offset = `translate(${this.margin().left}, ${this.margin().top})`;
+    // this.container will hold all our nodes
     this.container = svg.append('g').attr('transform', offset);
-    return svg.append('rect').attr('width', this._size[0] - (this._margin.left + this._margin.right)).attr('height', this._size[1] - (this._margin.top + this._margin.bottom)).attr('transform', offset).attr('class', 'border-rect');
+
+    // this rectangle draws the border around the flame graph
+    // has to be appended after the container so that the border is visible
+    // we also need to apply the same translation
+    return svg.append('rect')
+      .attr('width', this._size[0] - (this._margin.left + this._margin.right))
+      .attr('height', this._size[1] - (this._margin.top + this._margin.bottom))
+      .attr('transform', offset)
+      .attr('class', 'border-rect');
   }
 
   _renderNodes(containers, attrs, enter, data) {
@@ -403,12 +422,9 @@ class FlameGraph {
       }
       return 's';
     }))(this)).offset(((_this => d => {
-      let x;
-      let xOffset;
-      let yOffset;
-      x = _this.x(d.x0) + _this.x(d.x1 - d.x0) / 2;
-      xOffset = Math.max(Math.ceil(_this.x(d.x1 - d.x0) / 2), 5);
-      yOffset = Math.ceil(_this.cellHeight() / 2);
+      let x = _this.x(d.x0) + _this.x(d.x1 - d.x0) / 2;
+      let xOffset = Math.max(Math.ceil(_this.x(d.x1 - d.x0) / 2), 5);
+      let yOffset = Math.ceil(_this.cellHeight() / 2);
       if (_this.width() - 100 < x) {
         return [0, -xOffset];
       }
@@ -431,20 +447,17 @@ class FlameGraph {
   }
 
   _renderAncestors() {
-    let ancestor;
-    let ancestorData;
-    let ancestors;
-    let idx;
+    let i;
     let j;
+    let idx;
     let len;
-    let newAncestors;
-    let prev;
-    let renderAncestor;
+    let ancestor;
+    let ancestors;
     if (!this._ancestors.length) {
       ancestors = this.container.selectAll('.ancestor').remove();
       return this;
     }
-    ancestorData = this._ancestors.map((ancestor, idx) => ({
+    let ancestorData = this._ancestors.map((ancestor, idx) => ({
       name: ancestor.name,
       value: idx + 1,
       location: ancestor.location,
@@ -452,12 +465,14 @@ class FlameGraph {
     }));
     for (idx = j = 0, len = ancestorData.length; j < len; idx = ++j) {
       ancestor = ancestorData[idx];
-      prev = ancestorData[idx - 1];
+      let prev = ancestorData[idx - 1];
       if (prev) {
         prev.children = [ancestor];
       }
     }
-    renderAncestor = {
+
+    // FIXME: this is pretty ugly, but we need to add links between ancestors
+    let renderAncestor = {
       x: (function(_this) {
         return function(d) {
           return 0;
@@ -477,20 +492,23 @@ class FlameGraph {
       })(this)
     };
 
+    // JOIN
     ancestors = this.container.selectAll('.ancestor').data(
       FlameGraphUtils.partition(ancestorData[0]), d => d.location
     );
 
+    // UPDATE
     this._renderNodes(ancestors, renderAncestor, false, ancestorData);
-    newAncestors = ancestors.enter().append('g').attr('class', 'ancestor');
+    // ENTER
+    let newAncestors = ancestors.enter().append('g').attr('class', 'ancestor');
     this._renderNodes(newAncestors, renderAncestor, true, ancestorData);
+    // EXIT
     ancestors.exit().remove();
     return this;
   }
 
   _enableNavigation() {
-    let clickable;
-    clickable = ((_this => d => {
+    let clickable = ((_this => d => {
       let ref;
       return Math.round(_this.width() - _this.x(d.x1 - d.x0)) > 0 && ((ref = d.children) != null ? ref.length : void 0);
     }))(this);
@@ -514,10 +532,8 @@ class FlameGraph {
 
   _generateAccessors(accessors) {
     let accessor;
-    let j;
-    let len;
     let results = [];
-    for (j = 0, len = accessors.length; j < len; j++) {
+    for (let j = 0, len = accessors.length; j < len; j++) {
       accessor = accessors[j];
       results.push(this[accessor] = ((accessor => function(newValue) {
         if (!arguments.length) {
