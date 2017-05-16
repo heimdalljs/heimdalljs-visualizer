@@ -18,7 +18,8 @@
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
-    "d3-tip": "Caged/d3-tip#pull/198/head",
+    "d3": "^4.9.0",
+    "d3-tip": "github:vlascik/d3-tip#fix-offscreen-tooltips",
     "ember-cli": "^2.13.0-beta.3",
     "ember-cli-app-version": "^3.0.0",
     "ember-cli-babel": "^6.0.0-beta.3",
