@@ -3,6 +3,7 @@
     <div class="nav-left">
       {{link-to 'Graph' 'graph' class="nav-item is-tab" activeClass="is-active"}}
       {{link-to 'Nodes' 'slow-nodes' class="nav-item is-tab" activeClass="is-active"}}
+      {{link-to 'Flame' 'flame' class="nav-item is-tab" activeClass="is-active"}}
     </div>
 
     <div class="nav-center">
@@ -35,16 +36,16 @@
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
-    <form>
-      <div class="control is-grouped">
-        <label class="label">Upload the output of <code>BROCCOLI_VIZ=1 ember build</code>:</label>
-        <p class="control">
-          <input name="file-upload" type="file" onchange={{action 'parseFile'}}>
-        </p>
-      </div>
-      <div class="control is-grouped">
-        <label class="label">Sample File:</label>
-        <p class="control">
+      <form>
+        <div class="control is-grouped">
+          <label class="label">Upload the output of <code>BROCCOLI_VIZ=1 ember build</code>:</label>
+          <p class="control">
+            <input name="file-upload" type="file" onchange={{action 'parseFile'}}>
+          </p>
+        </div>
+        <div class="control is-grouped">
+          <label class="label">Sample File:</label>
+          <p class="control">
           <span class="select is-small">
             <select onchange={{action 'useSample' value="target.value"}}>
               <option selected disabled>Choose sample file</option>
@@ -52,9 +53,9 @@
               <option value="./broccoli-viz-files/ghost-initial-build-canary-ember-cli-20170206.json">Ghost Admin Client - 2017-02-06</option>
             </select>
           </span>
-        </p>
-      </div>
-    </form>
+          </p>
+        </div>
+      </form>
     </div>
   </div>
   <button class="modal-close" {{action (action (mut showUploadModal) false)}}></button>

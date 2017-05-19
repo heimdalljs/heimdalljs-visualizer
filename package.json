@@ -18,7 +18,9 @@
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
-    "ember-cli": "^2.13.0-beta.1",
+    "d3": "^4.9.0",
+    "d3-tip": "github:vlascik/d3-tip#fix-offscreen-tooltips",
+    "ember-cli": "^2.13.0-beta.3",
     "ember-cli-app-version": "^3.0.0",
     "ember-cli-babel": "^6.0.0-beta.3",
     "ember-cli-dependency-checker": "^1.3.0",
@@ -40,14 +42,15 @@
     "loader.js": "^4.2.3"
   },
   "engines": {
-    "node": ">= 0.12.0"
+    "node": ">= 4"
   },
   "private": true,
   "dependencies": {
     "broccoli-merge-trees": "^2.0.0",
     "bulma": "^0.3.1",
+    "d3-flame-graphs": "^3.1.0",
     "ember-cli-babili": "^0.1.1",
-    "ember-d3": "^0.3.1",
+    "ember-d3": "^0.3.2",
     "ember-fetch": "^1.4.2",
     "ember-font-awesome": "^3.0.1",
     "ember-native-dom-event-dispatcher": "^0.6.0",

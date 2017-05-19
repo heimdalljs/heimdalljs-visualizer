@@ -12,6 +12,7 @@ Router.map(function() {
   });
 
   this.route('slow-nodes');
+  this.route('flame');
 });
 
 export default Router;

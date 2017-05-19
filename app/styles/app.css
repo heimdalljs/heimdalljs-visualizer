@@ -1,5 +1,17 @@
 body {
   margin-top: 3.5rem;
+  height: calc(100% - 3.55rem);
+}
+
+html,
+body > [class="ember-view"],
+.flame-graph {
+  height: 100%;
+}
+
+.d3-tip {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 13px;
 }
 
 .global-nav {
@@ -66,3 +78,4 @@ body {
 .table-row:hover {
   cursor: pointer;
 }
+
