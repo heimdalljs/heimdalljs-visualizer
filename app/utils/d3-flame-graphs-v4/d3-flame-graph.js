@@ -84,7 +84,8 @@ const FlameGraphUtils = {
         if (b.filler) {
           return -1; // move fillers to the right
         }
-        return a.data.name.localeCompare(b.data.name);
+        const name = a.data.name || "";
+        return name.localeCompare(b.data.name);
       });
     return d3partition(root).descendants();
   },
