@@ -27,7 +27,10 @@ function nodeTime(node) {
 export default Ember.Component.extend({
   graph: inject.service(),
 
-  sortDescending: true,
+  init() {
+    this._super(...arguments);
+    this.sortDescending = true;
+  },
 
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
