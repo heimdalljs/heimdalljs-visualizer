@@ -11,7 +11,7 @@
     <div class="level-item">
       <p class="control">
         <label class="checkbox">
-          {{input type="checkbox" checked=groupByPluginName}}
+          <input type="checkbox" checked={{groupByPluginName}} onchange={{action (mut groupByPluginName) value="target.checked"}}>
           Group by Plugin Name
         </label>
       </p>
@@ -24,7 +24,7 @@
     <tr>
       <td style="width: 65%">Description</td>
       <td>{{if groupByPluginName "Count" "Plugin Name"}}</td>
-      <td>
+      <td class="td-time">
         <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
       </td>
     </tr>
@@ -34,8 +34,8 @@
     {{#each sortedNodes as |node|}}
       <tr class="table-row" {{action 'toggleDetailsForNode' node}}>
         <td>{{node.label.name}}</td>
-        <td>{{node.label.broccoliPluginName}}</td>
-        <td>{{ns-to-ms node._stats.time.plugin}}</td>
+        <td class="table-row-plugin-name">{{node.label.broccoliPluginName}}</td>
+        <td class="td-time">{{ns-to-ms node._stats.time.plugin}}</td>
       </tr>
       {{#if node.showDetails}}
         <tr>
