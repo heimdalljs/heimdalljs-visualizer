@@ -10,7 +10,7 @@ export default Ember.Controller.extend({
   actions: {
     parseFile(event) {
       let reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         var contents = e.target.result;
         this.get('graph').setGraph(JSON.parse(contents));
       };

@@ -79,3 +79,6 @@ body > [class="ember-view"],
   cursor: pointer;
 }
 
+.td-time {
+  text-align: right;
+}

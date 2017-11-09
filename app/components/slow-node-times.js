@@ -27,13 +27,16 @@ function nodeTime(node) {
 export default Ember.Component.extend({
   graph: inject.service(),
 
-  sortDescending: true,
+  init() {
+    this._super(...arguments);
+    this.sortDescending = true;
+  },
 
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
-    if (!data) { return []; }
-
     let nodes = [];
+
+    if (!data) { return nodes; }
 
     for (let node of data.dfsIterator()) {
       if (node.label.broccoliNode) {
@@ -77,17 +80,18 @@ export default Ember.Component.extend({
     }
 
     return nodes;
-  }),
+  }).readOnly(),
 
   sortedNodes: computed('nodes', 'sortDescending', function() {
+    let sortDescending = this.get('sortDescending');
     return this.get('nodes').sort((a, b) => {
-      if (this.get('sortDescending')) {
+      if (sortDescending) {
         return b._stats.time.plugin - a._stats.time.plugin;
       } else {
         return a._stats.time.plugin - b._stats.time.plugin;
       }
     });
-  }),
+  }).readOnly(),
 
   totalTime: computed('nodes', function() {
     let nodes = this.get('nodes');
@@ -95,7 +99,7 @@ export default Ember.Component.extend({
     return nodes.reduce(function(previousValue, node){
       return previousValue + node._stats.time.plugin;
     }, 0);
-  }),
+  }).readOnly(),
 
   actions: {
     'focus-node'(node) {
