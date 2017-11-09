@@ -3,6 +3,7 @@ import { scaleLinear, scaleQuantize } from 'd3-scale';
 import { min, max, range } from 'd3-array';
 import d3Tip from 'd3-tip';
 import { partition, hierarchy } from 'd3-hierarchy';
+import 'd3-transition';
 
 let indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; }
