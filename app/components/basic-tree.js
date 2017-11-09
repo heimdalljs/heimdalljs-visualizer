@@ -42,14 +42,14 @@ export default Ember.Component.extend({
     svgContainer.innerHTML = '';
 
     let svg = select(svgContainer)
-        .append("svg")
-        .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 300 300")
-        .classed("svg-content", true);
+      .append("svg")
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", "0 0 300 300")
+      .classed("svg-content", true);
 
     let g = svg.append("g");
 
-    let root = hierarchy(graphNode, (node) => {
+    let root = hierarchy(graphNode, node => {
       let children = [];
       for (let child of node.adjacentIterator()) {
         if (this.nodeFilter && !this.nodeFilter(child)) {
@@ -61,41 +61,39 @@ export default Ember.Component.extend({
 
       return children;
     })
-        .sum(d => d._stats.time.self);
+      .sum(d => d._stats.time.self);
 
-    // make debugging easier, this is dumb though
+    // for debugging
     self.root = root;
 
     let graph = cluster()
-        .separation((a,b) => {
-          return a.parent == b.parent ? 4 : 8;
-        })
-        .nodeSize([8, 180]);
+      .separation((a,b) => a.parent == b.parent ? 4 : 8)
+      .nodeSize([8, 180]);
 
     function update(source) {
       graph(root);
       let nodes = root.descendants();
       let links = root.links();
       let node = g
-          .selectAll(".node")
-          .data(nodes, d => d.data.id);
+        .selectAll(".node")
+        .data(nodes, d => d.data.id);
 
       let nodeEnter = node
-          .enter()
-          .append("g")
-          .attr("class", 'node')
-          .attr("transform", d => `translate(${d.y},${d.x})`)
-          .on('click', (d) => {
-            // Toggle children on click.
-            if (d.children) {
-              d._children = d.children;
-              d.children = null;
-            } else {
-              d.children = d._children;
-              d._children = null;
-            }
-            update(d);
-          });
+        .enter()
+        .append("g")
+        .attr("class", 'node')
+        .attr("transform", d => `translate(${d.y},${d.x})`)
+        .on('click', (d) => {
+          // Toggle children on click.
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else {
+            d.children = d._children;
+            d._children = null;
+          }
+          update(d);
+        });
 
       // we want to wrap the next few text lines in a rect
       // but alignment is annoying, punting for now...
@@ -150,8 +148,8 @@ export default Ember.Component.extend({
         .remove();
 
       let link = g
-          .selectAll(".link")
-          .data(links, d => d.target.data.id);
+        .selectAll(".link")
+        .data(links, d => d.target.data.id);
 
       link
         .enter()

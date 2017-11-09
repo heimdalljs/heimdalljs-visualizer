@@ -5,29 +5,28 @@ import d3Tip from 'd3-tip';
 import { partition, hierarchy } from 'd3-hierarchy';
 import 'd3-transition';
 
-let indexOf = [].indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; }
-    return -1;
-  };
-
-let getClassAndMethodName = function(fqdn) {
-  let tokens;
+function getClassAndMethodName(fqdn) {
   if (!fqdn) {
     return "";
   }
-  tokens = fqdn.split(".");
+  let tokens = fqdn.split(".");
   return tokens.slice(tokens.length - 2).join(".");
-};
+}
 
 // Return a vector (0.0 -> 1.0) that is a hash of the input string.
 // The hash is computed to favor early characters over later ones, so
 // that strings with similar starts have similar vectors. Only the first
 // 6 characters are considered.
-let hash = function(name) {
-  let i, j, maxHash, mod, ref, ref1, result, weight;
-  ref = [0, 0, 1, 10], result = ref[0], maxHash = ref[1], weight = ref[2], mod = ref[3];
+function hash(name) {
+  let ref = [0, 0, 1, 10];
+  let result = ref[0];
+  let maxHash = ref[1];
+  let weight = ref[2];
+  let mod = ref[3];
+
   name = getClassAndMethodName(name).slice(0, 6);
-  for (i = j = 0, ref1 = name.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; i = 0 <= ref1 ? ++j : --j) {
+
+  for (let i = 0, j = 0, ref1 = name.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; i = 0 <= ref1 ? ++j : --j) {
     result += weight * (name.charCodeAt(i) % mod);
     maxHash += weight * (mod - 1);
     weight *= 0.7;
@@ -37,7 +36,7 @@ let hash = function(name) {
   } else {
     return result;
   }
-};
+}
 
 const FlameGraphUtils = {
   // augments each node in the tree with the maximum distance
@@ -58,9 +57,7 @@ const FlameGraphUtils = {
       node.augmented = true;
       return node;
     }
-    let childSum = children.reduce((function(sum, child) {
-      return sum + child.value;
-    }), 0);
+    let childSum = children.reduce((sum, child) => sum + child.value, 0);
     if (childSum < node.value) {
       children.push({
         value: node.value - childSum,
@@ -72,6 +69,7 @@ const FlameGraphUtils = {
     node.augmented = true;
     return node;
   },
+
   partition(data) {
     let d3partition = partition();
 
@@ -89,6 +87,7 @@ const FlameGraphUtils = {
       });
     return d3partition(root).descendants();
   },
+
   hide(nodes, unhide) {
     if (unhide === null) {
       unhide = false;
@@ -134,7 +133,8 @@ const FlameGraphUtils = {
     });
   }
 };
-class FlameGraph {
+
+export default class FlameGraph {
   constructor(selector, root, debug) {
     this._selector = selector;
     this._generateAccessors(['margin', 'cellHeight', 'zoomEnabled', 'zoomAction', 'tooltip', 'tooltipPlugin', 'color', 'labelFunction']);
@@ -226,7 +226,7 @@ class FlameGraph {
     if (this.tip) {
       this.tip.hide();
     }
-    if (indexOf.call(this._ancestors, node) >= 0) {
+    if (this._ancestors.indexOf(node) >= 0) {
       this._ancestors = this._ancestors.slice(0, this._ancestors.indexOf(node));
     } else {
       this._ancestors.push(this._root);
@@ -399,14 +399,14 @@ class FlameGraph {
       .attr('class', 'label')
       .style('font-size', this.fontSize + "em")
       .transition().attr('dy', (this.fontSize / 2) + "em").attr('x', (function() {
-      return function(d) {
-        return attrs.x(d) + 2;
-      };
-    })(this)).attr('y', (function(_this) {
-      return function(d, idx) {
-        return attrs.y(d, idx) + _this.cellHeight() / 2;
-      };
-    })(this)).text(attrs.text);
+        return function(d) {
+          return attrs.x(d) + 2;
+        };
+      })(this)).attr('y', (function(_this) {
+        return function(d, idx) {
+          return attrs.y(d, idx) + _this.cellHeight() / 2;
+        };
+      })(this)).text(attrs.text);
     return this;
   }
 
@@ -546,5 +546,3 @@ class FlameGraph {
     return results;
   }
 }
-
-export default FlameGraph;

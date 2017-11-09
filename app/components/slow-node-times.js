@@ -34,9 +34,9 @@ export default Ember.Component.extend({
 
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
-    if (!data) { return []; }
-
     let nodes = [];
+
+    if (!data) { return nodes; }
 
     for (let node of data.dfsIterator()) {
       if (node.label.broccoliNode) {
@@ -80,7 +80,7 @@ export default Ember.Component.extend({
     }
 
     return nodes;
-  }),
+  }).readOnly(),
 
   sortedNodes: computed('nodes', 'sortDescending', function() {
     let sortDescending = this.get('sortDescending');
@@ -91,7 +91,7 @@ export default Ember.Component.extend({
         return a._stats.time.plugin - b._stats.time.plugin;
       }
     });
-  }),
+  }).readOnly(),
 
   totalTime: computed('nodes', function() {
     let nodes = this.get('nodes');
@@ -99,7 +99,7 @@ export default Ember.Component.extend({
     return nodes.reduce(function(previousValue, node){
       return previousValue + node._stats.time.plugin;
     }, 0);
-  }),
+  }).readOnly(),
 
   actions: {
     'focus-node'(node) {

@@ -40,24 +40,23 @@ export default Ember.Component.extend({
   },
 
   convert(rawData) {
-    let child, node, subTree, _i, _len, _ref;
-
-    node = {
+    let node = {
       value: rawData._stats.time.self,
       treeValue: rawData._stats.time.self,
       name: rawData._label.name + (rawData._label.broccoliPluginName ? ' (' + rawData._label.broccoliPluginName + ')' : ''),
       stats: rawData._stats,
       children: []
     };
+
     if (!rawData._children) {
       return node;
     }
 
     let treeValue = node.treeValue;
-    _ref = rawData._children;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      child = _ref[_i];
-      subTree = this.convert(child);
+    let _ref = rawData._children;
+    for (let _i = 0, _len = _ref.length; _i < _len; _i++) {
+      let child = _ref[_i];
+      let subTree = this.convert(child);
       if (subTree) {
         node.children.push(subTree);
         treeValue += subTree.treeValue;
@@ -70,11 +69,10 @@ export default Ember.Component.extend({
   },
 
   drawFlame(data) {
-    let _this = this;
     let profile = this.convert(data);
-
     let indent = -1;
-    let objToString = function(obj) {
+
+    let objToString = obj => {
       indent++;
       let str = '';
       let pad = "&nbsp;";
@@ -90,7 +88,7 @@ export default Ember.Component.extend({
               let padded = pad.repeat(5).substring(0, pad.length * 5 - obj[p].toString().length * 6) + obj[p];
               str += padded;
             } else if (p === 'time') {
-              let time = _this.formatTime(obj[p]);
+              let time = this.formatTime(obj[p]);
               let padded = ' ' + pad.repeat(8).substring(0, pad.length * 8 - time.length * 6) + time + '<br/>';
               str += padded;
             }
@@ -101,10 +99,10 @@ export default Ember.Component.extend({
       return str;
     };
 
-    let tooltip = function(d) {
-      let time = _this.formatTime(d.data.treeValue);
-      let percent = " [" + (((d.data.treeValue / _this.get('totalTime')) * 100).toFixed(1)) + "%]";
-      let self = " (self: " + _this.formatTime(d.data.stats.time.self) + ")";
+    let tooltip = d => {
+      let time = this.formatTime(d.data.treeValue);
+      let percent = " [" + (((d.data.treeValue / this.get('totalTime')) * 100).toFixed(1)) + "%]";
+      let self = " (self: " + this.formatTime(d.data.stats.time.self) + ")";
       return d.data.name + "<br/>" + time + percent + self + "<br/>" + objToString(d.data.stats);
     };
 
