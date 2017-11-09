@@ -1,7 +1,6 @@
 import { select, event } from 'd3-selection';
 import { scaleLinear, scaleQuantize } from 'd3-scale';
 import { min, max, range } from 'd3-array';
-import { transition } from 'd3-transition';
 import d3Tip from 'd3-tip';
 import { partition, hierarchy } from 'd3-hierarchy';
 
@@ -316,7 +315,7 @@ class FlameGraph {
         };
       })(this),
       height: (function(_this) {
-        return function(d) {
+        return function(/* d */) {
           return _this.cellHeight();
         };
       })(this),
@@ -398,7 +397,7 @@ class FlameGraph {
     targetLabels.data(data, d => d.data ? d.data.location : d.location)
       .attr('class', 'label')
       .style('font-size', this.fontSize + "em")
-      .transition().attr('dy', (this.fontSize / 2) + "em").attr('x', (function(_this) {
+      .transition().attr('dy', (this.fontSize / 2) + "em").attr('x', (function() {
       return function(d) {
         return attrs.x(d) + 2;
       };
@@ -448,7 +447,6 @@ class FlameGraph {
   }
 
   _renderAncestors() {
-    let i;
     let j;
     let idx;
     let len;
@@ -474,8 +472,8 @@ class FlameGraph {
 
     // FIXME: this is pretty ugly, but we need to add links between ancestors
     let renderAncestor = {
-      x: (function(_this) {
-        return function(d) {
+      x: (function() {
+        return function(/* d */) {
           return 0;
         };
       })(this),
@@ -486,7 +484,7 @@ class FlameGraph {
       })(this),
       width: this.width(),
       height: this.cellHeight(),
-      text: (function(_this) {
+      text: (function() {
         return function(d) {
           return "↩ " + (getClassAndMethodName(d.data ? d.data.name : d.name));
         };
@@ -514,7 +512,7 @@ class FlameGraph {
       return Math.round(_this.width() - _this.x(d.x1 - d.x0)) > 0 && ((ref = d.children) != null ? ref.length : void 0);
     }))(this);
 
-    this.container.selectAll('.node').classed('clickable', ((_this => d => clickable(d)))(this)).on('click', ((_this => d => {
+    this.container.selectAll('.node').classed('clickable', ((() => d => clickable(d)))(this)).on('click', ((_this => d => {
       if (_this.tip) {
         _this.tip.hide();
       }

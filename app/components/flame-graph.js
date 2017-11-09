@@ -116,7 +116,7 @@ export default Ember.Component.extend({
       .size([clientWidth, clientHeight])
       .cellHeight(20)
       .zoomEnabled(true)
-      .zoomAction((node, event) => console.log('Zoom: ', node, event))
+      .zoomAction((node, event) => self.console.log('Zoom: ', node, event))
       .labelFunction(d => d.data.name + ' [' + d.data.time + ' / ' + d.data.percent + ']')
       .tooltip(tooltip).render();
   }
