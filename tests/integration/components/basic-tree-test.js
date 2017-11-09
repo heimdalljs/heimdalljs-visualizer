@@ -12,7 +12,7 @@ test('it renders', function(assert) {
 
   this.render(hbs`{{basic-tree}}`);
 
-  assert.equal(this.$().text().trim(), '');
+  assert.equal(this._element.textContent.trim(), '');
 
   // Template block usage:
   this.render(hbs`
@@ -21,5 +21,5 @@ test('it renders', function(assert) {
     {{/basic-tree}}
   `);
 
-  assert.equal(this.$().text().trim(), '');
+  assert.equal(this._element.textContent.trim(), '');
 });
