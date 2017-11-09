@@ -80,8 +80,9 @@ export default Ember.Component.extend({
   }),
 
   sortedNodes: computed('nodes', 'sortDescending', function() {
+    let sortDescending = this.get('sortDescending');
     return this.get('nodes').sort((a, b) => {
-      if (this.get('sortDescending')) {
+      if (sortDescending) {
         return b._stats.time.plugin - a._stats.time.plugin;
       } else {
         return a._stats.time.plugin - b._stats.time.plugin;
