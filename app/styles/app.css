@@ -81,4 +81,5 @@ body > [class="ember-view"],
 
 .td-time {
   text-align: right;
+  font-family: "Lucida Console", Monaco, monospace;
 }
