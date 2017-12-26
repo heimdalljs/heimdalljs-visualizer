@@ -38,6 +38,11 @@ body > [class="ember-view"],
   font: 10px sans-serif;
 }
 
+.nodetitle {
+  fill: white;
+  font-weight: bold !important;
+}
+
 .link {
   fill: none;
   stroke: #555;
