@@ -124,7 +124,7 @@ export default Ember.Component.extend({
     // want to change the orientation of the graph from top-down to left-right.
     // To do that we reverse X and Y for calculations and translations.
     let graph = cluster()
-      .separation((a,b) => 8)
+      .separation(() => 8)
       .nodeSize([9, 280]);
 
     function update(source) {
