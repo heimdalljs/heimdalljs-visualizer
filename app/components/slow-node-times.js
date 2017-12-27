@@ -50,22 +50,14 @@ export default Ember.Component.extend({
     let pluginNameFilter = this.get('pluginNameFilter');
     if (pluginNameFilter) {
       nodes = nodes.filter((node) => {
-        if (!node.label.broccoliNode) { return false; }
-        if (node.label.broccoliPluginName !== pluginNameFilter) { return false; }
-
-        return true;
+        return (node.label.broccoliNode &&
+                node.label.broccoliPluginName &&
+                pluginNameFilter === node.label.broccoliPluginName);
       });
     }
 
     let groupByPluginName = this.get('groupByPluginName');
     if (groupByPluginName) {
-      let pluginNameMap = nodes.reduce((memo, node) => {
-        let pluginName = node.label.broccoliPluginName;
-        memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
-        memo[pluginName].time += node._stats.time.plugin;
-        memo[pluginName].count++;
-        return memo;
-      }, {})
 
       nodes = [];
       for (let pluginName in pluginNameMap) {
@@ -80,6 +72,27 @@ export default Ember.Component.extend({
     }
 
     return nodes;
+  }).readOnly(),
+
+  pluginNameMap: computed('nodes', function() {
+    let nodes = this.get('nodes');
+    return nodes.reduce((memo, node) => {
+      let pluginName = node.label.broccoliPluginName;
+      memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
+      memo[pluginName].time += node._stats.time.plugin;
+      memo[pluginName].count++;
+      return memo;
+    }, {});
+  }).readOnly(),
+
+  pluginNames: computed('pluginNameMap', function() {
+    var keys = Object.keys(this.get('pluginNameMap'));
+    var undefIndex = keys.indexOf('undefined');
+    if (undefIndex >= 0) {
+      keys.splice(undefIndex, 1);
+    }
+    keys.sort();
+    return keys;
   }).readOnly(),
 
   sortedNodes: computed('nodes', 'sortDescending', function() {
@@ -118,6 +131,10 @@ export default Ember.Component.extend({
 
     toggleTime() {
       this.toggleProperty('sortDescending');
+    },
+
+    selectFilter(value) {
+      this.set('pluginNameFilter', (value === 'clearFilter' ? undefined : value));
     }
   }
 });
