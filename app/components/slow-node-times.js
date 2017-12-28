@@ -51,15 +51,25 @@ export default Ember.Component.extend({
     if (pluginNameFilter) {
       nodes = nodes.filter((node) => {
         return (node.label.broccoliNode &&
-                node.label.broccoliPluginName &&
-                pluginNameFilter === node.label.broccoliPluginName);
+                (pluginNameFilter === node.label.broccoliPluginName ||
+                 pluginNameFilter === 'undefined' && node.label.broccoliPluginName === undefined));
       });
     }
 
+    // Note: the following is also gathering stats for the items that
+    // have no broccoliPluginName (the 'name' is undefined).
     let groupByPluginName = this.get('groupByPluginName');
     if (groupByPluginName) {
+      let pluginNameMap = nodes.reduce((memo, node) => {
+        let pluginName = node.label.broccoliPluginName;
+        memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
+        memo[pluginName].time += node._stats.time.plugin;
+        memo[pluginName].count++;
+        return memo;
+      }, {});
 
       nodes = [];
+      
       for (let pluginName in pluginNameMap) {
         nodes.push({
           groupedByPluginName: true,
@@ -74,25 +84,33 @@ export default Ember.Component.extend({
     return nodes;
   }).readOnly(),
 
-  pluginNameMap: computed('nodes', function() {
+  pluginNames: computed('nodes', function() {
     let nodes = this.get('nodes');
-    return nodes.reduce((memo, node) => {
-      let pluginName = node.label.broccoliPluginName;
-      memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
-      memo[pluginName].time += node._stats.time.plugin;
-      memo[pluginName].count++;
-      return memo;
-    }, {});
-  }).readOnly(),
-
-  pluginNames: computed('pluginNameMap', function() {
-    var keys = Object.keys(this.get('pluginNameMap'));
-    var undefIndex = keys.indexOf('undefined');
-    if (undefIndex >= 0) {
-      keys.splice(undefIndex, 1);
+    if (!nodes || nodes.length === 0) {
+      return [];
     }
-    keys.sort();
-    return keys;
+
+    // If the first item in the list is an object with
+    // 'groupedByPluginName' = true, we just need to pull
+    // off the label as the plugin name. If not, we need
+    // to create a map of the plugin names and return that.
+    let pluginNames = [];
+    
+    if (nodes[0].groupedByPluginName === true) {
+      pluginNames = nodes.map(node => node.label.name);
+    } else {
+      let pluginNameMap = nodes.reduce((memo, node) => {
+        let pluginName = node.label.broccoliPluginName;
+        memo[pluginName] = pluginName;
+        return memo;
+      }, {});
+
+      pluginNames = Object.keys(pluginNameMap);
+    }
+
+    pluginNames.sort();
+
+    return pluginNames;
   }).readOnly(),
 
   sortedNodes: computed('nodes', 'sortDescending', function() {
