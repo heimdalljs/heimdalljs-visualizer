@@ -13,16 +13,30 @@ function selfTime(node) {
       return value;
     }
   }
+  return 0;
 }
 
-function nodeTime(node) {
-  let nodeTotal = 0;
-  for (let childNode of node.dfsIterator((n) => n.label.broccoliNode)) {
-    nodeTotal += selfTime(childNode);
+// Given a node, compute the total time taken by the node
+// and its children (by summing the total time of the children
+// and adding the self time of the node). Return that value,
+// and assign it to the _stats.time.plugin attribute of the node.
+// Note: we skip the non-broccoliNodes except at the beginning
+// (the root of the tree is not a broccoliNode, but we want to
+// proceed to its children
+function computeNodeTimes(node) {
+  var total = selfTime(node);
+
+  for (let childNode of node.adjacentIterator()) {
+    if (childNode.label.broccoliNode) {
+      total += computeNodeTimes(childNode);
+    }
   }
 
-  return nodeTotal;
+  Ember.set(node._stats.time, 'plugin', total);
+
+  return total;
 }
+
 
 export default Ember.Component.extend({
   graph: inject.service(),
@@ -34,16 +48,18 @@ export default Ember.Component.extend({
 
   nodes: computed('data', 'filter', 'pluginNameFilter', 'groupByPluginName', function() {
     let data = this.get('data');
+
     let nodes = [];
 
-    if (!data) { return nodes; }
+    if (!data) {
+      return nodes;
+    }
+
+    computeNodeTimes(data);  // start at root node of tree (which is not a broccoliNode)
 
     for (let node of data.dfsIterator()) {
       if (node.label.broccoliNode) {
         nodes.push(node);
-        if (!node._stats.time.plugin) {
-          node._stats.time.plugin = nodeTime(node);
-        }
       }
     }
 
@@ -86,6 +102,7 @@ export default Ember.Component.extend({
 
   pluginNames: computed('nodes', function() {
     let nodes = this.get('nodes');
+
     if (!nodes || nodes.length === 0) {
       return [];
     }
