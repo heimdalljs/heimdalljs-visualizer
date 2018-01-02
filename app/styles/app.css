@@ -38,6 +38,11 @@ body > [class="ember-view"],
   font: 10px sans-serif;
 }
 
+.nodetitle {
+  fill: white;
+  font-weight: bold !important;
+}
+
 .link {
   fill: none;
   stroke: #555;
@@ -67,12 +72,34 @@ body > [class="ember-view"],
   border-bottom: 1px solid #eee;
 }
 
+.nodes-controls select {
+  font-size: 1rem;
+}
+
+.nodes-table {
+    width:100%;
+    table-layout: fixed;
+}
+
 .nodes-table_header tr:hover {
   background-color: initial;
 }
 
 .nodes-table_toggle {
   color: inherit;
+}
+
+.nodes-table th:nth-child(1) {
+  text-align: left;
+  width: 60%;
+}
+.nodes-table th:nth-child(2) {
+  text-align: left;
+  width: 30%;
+}
+.nodes-table th:nth-child(3) {
+  text-align: right;
+  width: 10%;
 }
 
 .table-row:hover {
@@ -83,3 +110,10 @@ body > [class="ember-view"],
   text-align: right;
   font-family: "Lucida Console", Monaco, monospace;
 }
+
+.nodes-table thead th,
+.nodes-table tfoot td {
+  font-weight: bold;
+}
+
+

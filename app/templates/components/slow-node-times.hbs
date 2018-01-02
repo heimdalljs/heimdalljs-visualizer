@@ -2,9 +2,17 @@
   <div class="level-left">
     <div class="level-item">
       <p class="control has-addons">
-        {{input class="input" value=pluginNameFilter placeholder="Filter by plugin name..."}}
-
-        <button class="button is-primary {{if (not pluginNameFilter) 'is-disabled'}}" {{action (action (mut pluginNameFilter) '')}}>Clear</button>
+        <select onchange={{action "selectFilter" value="target.value"}}>
+           {{#unless pluginNameFilter}}
+             <option disabled selected> - Filter by Plugin Name - </option>
+           {{/unless}}
+           {{#each pluginNames as |pluginName|}}
+             <option value="{{pluginName}}">{{pluginName}}</option>
+           {{/each}}
+           {{#if pluginNameFilter}}
+             <option value="clearFilter">Clear Filter</option>
+           {{/if}}
+        </select>        
       </p>
     </div>
 
@@ -22,11 +30,11 @@
 <table class="nodes-table table is-striped">
   <thead class="nodes-table_header">
     <tr>
-      <td style="width: 65%">Description</td>
-      <td>{{if groupByPluginName "Count" "Plugin Name"}}</td>
-      <td class="td-time">
+      <th>Description</th>
+      <th>{{if groupByPluginName "Count" "Plugin Name"}}</th>
+      <th class="td-time">
         <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
-      </td>
+      </th>
     </tr>
   </thead>
 
@@ -71,8 +79,7 @@
   </tbody>
   <tfoot>
     <tr>
-      <td colspan=2 class="has-text-right">Total</td>
-      <td>{{ns-to-ms totalTime}}</td>
+      <td colspan="3" class="td-time">Total: {{ns-to-ms totalTime}}</td>
     </tr>
   </tfoot>
 </table>
