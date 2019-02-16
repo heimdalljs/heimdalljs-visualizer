@@ -5,11 +5,11 @@
     <div class="container">
       <ul>
         <li class="{{if (eq route 'graph.index') 'is-active'}}">
-          {{#link-to 'graph.index'}}Full Graph{{/link-to}}
+          {{#link-to "graph.index"}}Full Graph{{/link-to}}
         </li>
         <li class="{{if (eq route 'graph.node') 'is-active'}}">
-          {{#link-to 'graph.node'}}
-            Selected Node: {{if graph.selectedNode graph.selectedNode.label.name 'None'}}
+          {{#link-to "graph.node"}}
+            Selected Node: {{if graph.selectedNode graph.selectedNode.label.name "None"}}
           {{/link-to}}
         </li>
       </ul>

@@ -1,6 +1,6 @@
-import Ember from 'ember';
+import { helper as buildHelper } from '@ember/component/helper';
 
-export default Ember.Helper.helper(function([node]) {
+export default buildHelper(function([node]) {
   let stats = {};
 
   for (let [name, value] of node.statsIterator()) {

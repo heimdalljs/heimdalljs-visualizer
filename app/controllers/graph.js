@@ -1,9 +1,9 @@
 import Ember from 'ember';
+import Controller from '@ember/controller';
+import { getOwner } from '@ember/application';
+import { computed } from '@ember/object';
 
 const {
-  Controller,
-  getOwner,
-  computed,
   inject
 } = Ember;
 

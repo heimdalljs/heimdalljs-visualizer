@@ -1,9 +1,10 @@
+import Controller from '@ember/controller';
 import Ember from 'ember';
 
 const {
   inject
 } = Ember;
 
-export default Ember.Controller.extend({
+export default Controller.extend({
   graph: inject.service()
 });

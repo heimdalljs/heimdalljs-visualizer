@@ -1,23 +1,29 @@
 import Ember from 'ember';
 
-// Import the D3 packages we want to use
-import { select, event } from 'd3-selection';
-import { cluster, hierarchy } from 'd3-hierarchy';
-import { zoom, zoomIdentity } from 'd3-zoom';
+const {
+  select,
+  hierarchy,
+  cluster,
+  zoom,
+  zoomIdentity
+} = self.d3;
 
-const { run, get, inject } = Ember;
+const { inject } = Ember;
+import { run } from '@ember/runloop';
+import { get } from '@ember/object';
+import Component from '@ember/component';
 
 const DURATION = 500;
 
 // The offset amount (in px) from the left or right side of a node
 // box to offset lines between nodes, so the lines don't come right
 // up to the edge of the box.
-const NODE_OFFSET_SIZE = 50; 
+const NODE_OFFSET_SIZE = 50;
 
 // copied these functions temporarily from `broccoli-viz` here:
 // https://github.com/ember-cli/broccoli-viz/blob/master/lib/node-by-id.js
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['basic-tree'],
 
   graph: inject.service(),
@@ -120,7 +126,7 @@ export default Ember.Component.extend({
     // for debugging
     self.root = root;
 
-    // Create the graph. The nodeSize() is [8,280] (width, height) because we 
+    // Create the graph. The nodeSize() is [8,280] (width, height) because we
     // want to change the orientation of the graph from top-down to left-right.
     // To do that we reverse X and Y for calculations and translations.
     let graph = cluster()
@@ -177,7 +183,7 @@ export default Ember.Component.extend({
          .style('fill', "#fff");
 
       // Draw a box in a separate color for the first line as
-      // a 'title'. 
+      // a 'title'.
       nodeEnter.append("rect")
          .attr('x', 0)
          .attr('y', '-2em')
@@ -258,7 +264,7 @@ export default Ember.Component.extend({
         .attr("d", function(d) {
           let sourceExitY = d.source.y + d.source.computedWidth + NODE_OFFSET_SIZE;
           let targetEntranceY = d.target.y - NODE_OFFSET_SIZE;
-          
+
           return "M" + d.target.y + "," + d.target.x
             + "L" + targetEntranceY + "," + d.target.x
             + " " + sourceExitY + "," + d.target.x
@@ -272,7 +278,7 @@ export default Ember.Component.extend({
         .attr("d", function(d) {
           let sourceExitY = d.source.y + d.source.computedWidth + NODE_OFFSET_SIZE;
           let targetEntranceY = d.target.y - NODE_OFFSET_SIZE;
-          
+
           return "M" + d.target.y + "," + d.target.x
             + "L" + targetEntranceY + "," + d.target.x
             + " " + sourceExitY + "," + d.target.x

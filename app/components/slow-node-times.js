@@ -1,9 +1,9 @@
 import Ember from 'ember';
+import { get, set } from '@ember/object';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
 const {
-  get,
-  set,
-  computed,
   inject
 } = Ember;
 
@@ -32,13 +32,13 @@ function computeNodeTimes(node) {
     }
   }
 
-  Ember.set(node._stats.time, 'plugin', total);
+  set(node._stats.time, 'plugin', total);
 
   return total;
 }
 
 
-export default Ember.Component.extend({
+export default Component.extend({
   graph: inject.service(),
 
   init() {
@@ -85,7 +85,7 @@ export default Ember.Component.extend({
       }, {});
 
       nodes = [];
-      
+
       for (let pluginName in pluginNameMap) {
         nodes.push({
           groupedByPluginName: true,
@@ -112,7 +112,7 @@ export default Ember.Component.extend({
     // off the label as the plugin name. If not, we need
     // to create a map of the plugin names and return that.
     let pluginNames = [];
-    
+
     if (nodes[0].groupedByPluginName === true) {
       pluginNames = nodes.map(node => node.label.name);
     } else {

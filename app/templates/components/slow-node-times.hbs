@@ -3,16 +3,16 @@
     <div class="level-item">
       <p class="control has-addons">
         <select onchange={{action "selectFilter" value="target.value"}}>
-           {{#unless pluginNameFilter}}
-             <option disabled selected> - Filter by Plugin Name - </option>
-           {{/unless}}
-           {{#each pluginNames as |pluginName|}}
-             <option value="{{pluginName}}">{{pluginName}}</option>
-           {{/each}}
-           {{#if pluginNameFilter}}
-             <option value="clearFilter">Clear Filter</option>
-           {{/if}}
-        </select>        
+          {{#unless pluginNameFilter}}
+            <option disabled selected> - Filter by Plugin Name - </option>
+          {{/unless}}
+          {{#each pluginNames as |pluginName|}}
+            <option value={{pluginName}}>{{pluginName}}</option>
+          {{/each}}
+          {{#if pluginNameFilter}}
+            <option value="clearFilter">Clear Filter</option>
+          {{/if}}
+        </select>
       </p>
     </div>
 
@@ -59,7 +59,7 @@
                 {{#each-in (stats-iterator node) as |stat value|}}
                   <div>
                     <strong>{{stat}}</strong>:
-                    {{#if (includes stat 'time')}}
+                    {{#if (includes stat "time")}}
                       {{ns-to-ms value}}ms
                     {{else}}
                       {{value}}
@@ -69,7 +69,7 @@
               </div>
 
               <div class="card-footer">
-                <a class="card-footer-item" {{action 'focus-node' node}}>Show Graph</a>
+                <a class="card-footer-item" {{action "focus-node" node}}>Show Graph</a>
               </div>
             </div>
           </td>

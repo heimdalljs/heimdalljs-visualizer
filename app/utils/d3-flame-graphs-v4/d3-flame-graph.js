@@ -1,9 +1,14 @@
-import { select, event } from 'd3-selection';
-import { scaleLinear, scaleQuantize } from 'd3-scale';
-import { min, max, range } from 'd3-array';
+const {
+  select,
+  partition,
+  hierarchy,
+  min,
+  max,
+  range,
+  scaleLinear,
+  scaleQuantize
+} = self.d3;
 import d3Tip from 'd3-tip';
-import { partition, hierarchy } from 'd3-hierarchy';
-import 'd3-transition';
 
 function getClassAndMethodName(fqdn) {
   if (!fqdn) {
@@ -437,11 +442,11 @@ export default class FlameGraph {
     this.container.call(this.tip);
     this.container.selectAll('.node').on('mouseover', (function(_this) {
       return function(d) {
-        return _this.tip.show(d, event.currentTarget);
+        return _this.tip.show(d, self.d3.event.currentTarget);
       };
     })(this)).on('mouseout', this.tip.hide).selectAll('.label').on('mouseover', (function(_this) {
       return function(d) {
-        return _this.tip.show(d, event.currentTarget.parentNode);
+        return _this.tip.show(d, self.d3.event.currentTarget.parentNode);
       };
     })(this)).on('mouseout', this.tip.hide);
     return this;
@@ -518,14 +523,14 @@ export default class FlameGraph {
         _this.tip.hide();
       }
       if (clickable(d)) {
-        return _this.zoom(d, event);
+        return _this.zoom(d, self.d3.event);
       }
     }))(this));
     this.container.selectAll('.ancestor').on('click', ((_this => (d, idx) => {
       if (_this.tip) {
         _this.tip.hide();
       }
-      return _this.zoom(_this._ancestors[idx], event);
+      return _this.zoom(_this._ancestors[idx], self.d3.event);
     }))(this));
     return this;
   }

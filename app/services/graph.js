@@ -1,15 +1,12 @@
-import Ember from 'ember';
 import config from '../config/environment';
 import heimdallGraph from 'heimdalljs-graph';
-
-const {
-  getOwner
-} = Ember;
+import { getOwner } from '@ember/application';
+import Service from '@ember/service';
 
 const DATA_STORAGE_KEY = `${config.storageVersion}_graph-data`;
 const SELECTED_NODE_STORAGE_KEY = `${config.storageVersion}_selected-node-id`;
 
-export default Ember.Service.extend({
+export default Service.extend({
   init() {
     this._super(...arguments);
 
