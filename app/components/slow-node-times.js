@@ -23,18 +23,20 @@ function selfTime(node) {
 // Note: we skip the non-broccoliNodes except at the beginning
 // (the root of the tree is not a broccoliNode, but we want to
 // proceed to its children
-function computeNodeTimes(node) {
-  var total = selfTime(node);
+function computeNodeTimes(root, totalMap=new WeakMap()) {
+  for (let node of root.dfsIterator({order: 'post'})) {
+    let total = selfTime(node);
+    for (let child of node.childIterator()) {
+      total += totalMap.get(child);
+    }
+    totalMap.set(node, total);
 
-  for (let childNode of node.adjacentIterator()) {
-    if (childNode.label.broccoliNode) {
-      total += computeNodeTimes(childNode);
+    if (node.label.broccoliNode) {
+      set(node._stats.time, 'plugin', total);
     }
   }
 
-  set(node._stats.time, 'plugin', total);
-
-  return total;
+  return totalMap.get(root);
 }
 
 

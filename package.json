@@ -61,7 +61,7 @@
     "ember-fetch": "^6.4.0",
     "ember-font-awesome": "^4.0.0-alpha.14",
     "ember-truth-helpers": "^2.1.0",
-    "heimdalljs-graph": "^1.0.0"
+    "heimdalljs-graph": "github:heimdalljs/heimdalljs-graph#hjdivad/api-changes"
   },
   "bugs": {
     "url": "https://github.com/rwjblue/heimdalljs-visualizer/issues"

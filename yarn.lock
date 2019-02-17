@@ -5773,10 +5773,9 @@ heimdalljs-graph@^0.3.4:
   version "0.3.5"
   resolved "https://codeload.github.com/heimdalljs/heimdalljs-graph/tar.gz/efe1bcc2eb64eee45b0a06aea33c638587e98508"
 
-heimdalljs-graph@^1.0.0:
+"heimdalljs-graph@github:heimdalljs/heimdalljs-graph#hjdivad/api-changes":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/heimdalljs-graph/-/heimdalljs-graph-1.0.0.tgz#0059857952988e54f3a74bb23edaf669f8eaf6af"
-  integrity sha512-v2AsTERBss0ukm/Qv4BmXrkwsT5x6M1V5Om6E8NcDQ/ruGkERsfsuLi5T8jx8qWzKMGYlwzAd7c/idymxRaPzA==
+  resolved "https://codeload.github.com/heimdalljs/heimdalljs-graph/tar.gz/9d7581feddfee81a27aac5610a1a7b40e3db7f23"
 
 heimdalljs-logger@^0.1.7:
   version "0.1.9"
