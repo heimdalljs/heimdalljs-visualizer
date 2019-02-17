@@ -1,7 +1,7 @@
 import Ember from 'ember';
+import Controller from '@ember/controller';
 
 const {
-  Controller,
   inject
 } = Ember;
 

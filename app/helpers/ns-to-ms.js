@@ -1,7 +1,7 @@
-import Ember from 'ember';
+import { helper as buildHelper } from '@ember/component/helper';
 
 export function nsToMs([time]) {
   return (time / 1000000).toFixed(2);
 }
 
-export default Ember.Helper.helper(nsToMs);
+export default buildHelper(nsToMs);

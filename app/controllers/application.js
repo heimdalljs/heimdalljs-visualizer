@@ -1,11 +1,12 @@
 import Ember from 'ember';
 import fetch from "fetch";
+import Controller from '@ember/controller';
 
 const {
   inject
 } = Ember;
 
-export default Ember.Controller.extend({
+export default Controller.extend({
   graph: inject.service(),
 
   actions: {

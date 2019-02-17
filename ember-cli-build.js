@@ -1,32 +1,41 @@
-/*jshint node:true*/
-/* global require, module */
-var EmberApp = require('ember-cli/lib/broccoli/ember-app');
-var MergeTrees = require('broccoli-merge-trees');
-var path = require('path');
-var Funnel = require('broccoli-funnel');
+'use strict';
+
+const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+const MergeTrees = require('broccoli-merge-trees');
+const path = require('path');
+const Funnel = require('broccoli-funnel');
+
+function resolveDirname(file) {
+  return path.dirname(require.resolve(file));
+}
+
+function npm(file, options) {
+  return new Funnel(resolveDirname(file), options);
+}
 
 module.exports = function(defaults) {
-  var flameTree = new Funnel(path.dirname(require.resolve('d3-flame-graphs/dist/d3-flame-graph.js')), {
+  const flame= npm('d3-flame-graphs/dist/d3-flame-graph.js', {
     files: ['d3-flame-graph.js', 'd3-flame-graph.css'],
     destDir: 'd3-flame-graphs'
   });
 
-  var tipTree = new Funnel(path.dirname(require.resolve('d3-tip/index.js')), {
+  const tip= npm('d3-tip/index.js', {
     files: ['index.js'],
     destDir: 'd3-tip'
   });
 
-  var app = new EmberApp(defaults, {
-    // Add options here
-    vendorFiles: {
-      'jquery.js': null
-    },
+  const d3 = new Funnel(__dirname + '/vendor/d3/', {
+    files: ['d3.v5.js'],
+    destDir: 'd3'
+  });
+
+  const app = new EmberApp(defaults, {
     trees: {
       vendor: new MergeTrees([
-        'node_modules/heimdalljs-graph',
-        'node_modules/bulma',
-        tipTree,
-        flameTree,
+        resolveDirname('bulma'),
+        tip,
+        flame,
+        d3
       ], { overwrite: true })
     }
   });
@@ -44,11 +53,10 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
-  app.import('vendor/dist/amd/heimdalljs-graph.js');
-
-  // app.import('vendor/d3-flame-graphs/d3-flame-graph.js', { using: [{ transformation: 'amd', as: 'd3-flame-graph' }] });
+  app.import('vendor/d3/d3.v5.js');
+  app.import('vendor/d3-flame-graphs/d3-flame-graph.js', { using: [{ transformation: 'amd', as: 'd3-flame-graph' }] });
   app.import('vendor/d3-flame-graphs/d3-flame-graph.css');
-  app.import('vendor/d3-tip/index.js', { using: [{ transformation: 'amd', as: 'd3-tip' }] });
   app.import('vendor/css/bulma.css');
+
   return app.toTree();
 };

@@ -1,9 +1,9 @@
 import Ember from 'ember';
+import { get, set } from '@ember/object';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
 const {
-  get,
-  set,
-  computed,
   inject
 } = Ember;
 
@@ -23,22 +23,24 @@ function selfTime(node) {
 // Note: we skip the non-broccoliNodes except at the beginning
 // (the root of the tree is not a broccoliNode, but we want to
 // proceed to its children
-function computeNodeTimes(node) {
-  var total = selfTime(node);
+function computeNodeTimes(root, totalMap=new WeakMap()) {
+  for (let node of root.dfsIterator({order: 'post'})) {
+    let total = selfTime(node);
+    for (let child of node.childIterator()) {
+      total += totalMap.get(child);
+    }
+    totalMap.set(node, total);
 
-  for (let childNode of node.adjacentIterator()) {
-    if (childNode.label.broccoliNode) {
-      total += computeNodeTimes(childNode);
+    if (node.label.broccoliNode) {
+      set(node._stats.time, 'plugin', total);
     }
   }
 
-  Ember.set(node._stats.time, 'plugin', total);
-
-  return total;
+  return totalMap.get(root);
 }
 
 
-export default Ember.Component.extend({
+export default Component.extend({
   graph: inject.service(),
 
   init() {
@@ -85,7 +87,7 @@ export default Ember.Component.extend({
       }, {});
 
       nodes = [];
-      
+
       for (let pluginName in pluginNameMap) {
         nodes.push({
           groupedByPluginName: true,
@@ -112,7 +114,7 @@ export default Ember.Component.extend({
     // off the label as the plugin name. If not, we need
     // to create a map of the plugin names and return that.
     let pluginNames = [];
-    
+
     if (nodes[0].groupedByPluginName === true) {
       pluginNames = nodes.map(node => node.label.name);
     } else {

@@ -1,13 +1,18 @@
 import Ember from 'ember';
 import FlameGraph from '../utils/d3-flame-graphs-v4/d3-flame-graph';
 
-const { run, get, inject } = Ember;
+import { run } from '@ember/runloop';
+import { get } from '@ember/object';
+import Component from '@ember/component';
+import { readOnly } from '@ember/object/computed';
 
-export default Ember.Component.extend({
+const { inject } = Ember;
+
+export default Component.extend({
   classNames: ['flame-graph'],
   graph: inject.service(),
   flameGraph: null,
-  totalTime: Ember.computed.alias('graph.data.summary.totalTime'),
+  totalTime: readOnly('graph.data.summary.totalTime'),
 
   init() {
     this._super(...arguments);
