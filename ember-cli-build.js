@@ -56,7 +56,6 @@ module.exports = function(defaults) {
   app.import('vendor/d3/d3.v5.js');
   app.import('vendor/d3-flame-graphs/d3-flame-graph.js', { using: [{ transformation: 'amd', as: 'd3-flame-graph' }] });
   app.import('vendor/d3-flame-graphs/d3-flame-graph.css');
-  // app.import('vendor/d3-tip/index.js', { using: [{ transformation: 'amd', as: 'd3-tip' }] });
   app.import('vendor/css/bulma.css');
 
   return app.toTree();
