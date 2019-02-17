@@ -7,11 +7,7 @@ const Router = EmberRouter.extend({
 });
 
 Router.map(function() {
-  this.route('graph', { path: '/' }, function() {
-    this.route('node');
-  });
-
-  this.route('slow-nodes');
+  this.route('slow-nodes', { path: '/' });
   this.route('flame');
 });
 
