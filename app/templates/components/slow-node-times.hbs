@@ -1,85 +1,65 @@
-<div class="nodes-controls level is-marginless">
-  <div class="level-left">
-    <div class="level-item">
-      <p class="control has-addons">
-        <select onchange={{action "selectFilter" value="target.value"}}>
-          {{#unless pluginNameFilter}}
-            <option disabled selected> - Filter by Plugin Name - </option>
-          {{/unless}}
-          {{#each pluginNames as |pluginName|}}
-            <option value={{pluginName}}>{{pluginName}}</option>
-          {{/each}}
-          {{#if pluginNameFilter}}
-            <option value="clearFilter">Clear Filter</option>
-          {{/if}}
-        </select>
-      </p>
-    </div>
-
-    <div class="level-item">
-      <p class="control">
-        <label class="checkbox">
-          <input type="checkbox" checked={{groupByPluginName}} onchange={{action (mut groupByPluginName) value="target.checked"}}>
-          Group by Plugin Name
-        </label>
-      </p>
-    </div>
-  </div>
-</div>
-
-<table class="nodes-table table is-striped">
-  <thead class="nodes-table_header">
-    <tr>
-      <th>Description</th>
-      <th>{{if groupByPluginName "Count" "Plugin Name"}}</th>
-      <th class="td-time">
-        <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
-      </th>
-    </tr>
-  </thead>
-
-  <tbody>
-    {{#each sortedNodes as |node|}}
-      <tr class="table-row" {{action 'toggleDetailsForNode' node}}>
-        <td>{{node.label.name}}</td>
-        <td class="table-row-plugin-name">{{node.label.broccoliPluginName}}</td>
-        <td class="td-time">{{ns-to-ms node._stats.time.plugin}}</td>
+<DynamicHeight class="nodes-table-wrapper" @top=49>
+  <table class="nodes-table table is-striped">
+    <thead class="nodes-table_header">
+      <tr>
+        <th>Description</th>
+        <th>{{if groupByPluginName "Count" "Plugin Name"}}</th>
+        <th class="td-time">
+          <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
+        </th>
       </tr>
-      {{#if node.showDetails}}
-        <tr>
-          <td colspan="3">
-            <div class="card">
-              <header class="card-header">
-                <p class="card-header-title">
-                  Node Stats
-                </p>
-              </header>
+    </thead>
+      {{#vertical-collection sortedNodes
+        containerSelector=".nodes-table-wrapper"
+        tagName="tbody"
+        key="id"
+        estimateHeight=37
+        renderAll=false
+        staticHeight=false
+        bufferSize=30
 
-              <div class="card-content">
-                {{#each-in (stats-iterator node) as |stat value|}}
-                  <div>
-                    <strong>{{stat}}</strong>:
-                    {{#if (includes stat "time")}}
-                      {{ns-to-ms value}}ms
-                    {{else}}
-                      {{value}}
-                    {{/if}}
-                  </div>
-                {{/each-in}}
-              </div>
-
-              <div class="card-footer">
-                <a class="card-footer-item" {{action "focus-node" node}}>Show Graph</a>
-              </div>
-            </div>
-          </td>
+        as |node|
+      }}
+        <tr class="table-row" {{action 'toggleDetailsForNode' node}}>
+          <td>{{node.label.name}}</td>
+          <td class="table-row-plugin-name">{{node.label.broccoliPluginName}}</td>
+          <td class="td-time">{{ns-to-ms node._stats.time.plugin}}</td>
         </tr>
-      {{/if}}
-    {{/each}}
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="3" class="td-time">Total: {{ns-to-ms totalTime}}</td>
-    </tr>
-  </tfoot>
-</table>
+        {{#if node.showDetails}}
+          <tr>
+            <td colspan="3">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Node Stats
+                  </p>
+                </header>
+
+                <div class="card-content">
+                  {{#each-in (stats-iterator node) as |stat value|}}
+                    <div>
+                      <strong>{{stat}}</strong>:
+                      {{#if (includes stat "time")}}
+                        {{ns-to-ms value}}ms
+                      {{else}}
+                        {{value}}
+                      {{/if}}
+                    </div>
+                  {{/each-in}}
+                </div>
+
+                <div class="card-footer">
+                  <a class="card-footer-item" {{action "focus-node" node}}>Show Graph</a>
+                </div>
+              </div>
+            </td>
+          </tr>
+        {{/if}}
+      {{/vertical-collection}}
+    <tfoot>
+      <tr>
+        <td colspan="3" class="td-time">Total: {{ns-to-ms totalTime}}</td>
+      </tr>
+    </tfoot>
+  </table>
+</DynamicHeight>
