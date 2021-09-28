@@ -12,7 +12,7 @@
            {{#if pluginNameFilter}}
              <option value="clearFilter">Clear Filter</option>
            {{/if}}
-        </select>        
+        </select>
       </p>
     </div>
 
@@ -33,7 +33,7 @@
       <th>Description</th>
       <th>{{if groupByPluginName "Count" "Plugin Name"}}</th>
       <th class="td-time">
-        <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
+        <a href="#" class="nodes-table_toggle" {{action "toggleTime"}}>Self Time (ms) <i class="fa fa-caret-{{if sortDescending 'down' 'up'}}"></i></a>
       </th>
     </tr>
   </thead>
@@ -43,7 +43,13 @@
       <tr class="table-row" {{action 'toggleDetailsForNode' node}}>
         <td>{{node.label.name}}</td>
         <td class="table-row-plugin-name">{{node.label.broccoliPluginName}}</td>
-        <td class="td-time">{{ns-to-ms node._stats.time.plugin}}</td>
+        <td class="td-time">
+          {{#if groupByPluginName}}
+            {{ns-to-ms node._stats.time.plugin}}
+          {{else}}
+            {{ns-to-ms node._stats.time.self}}
+          {{/if}}
+        </td>
       </tr>
       {{#if node.showDetails}}
         <tr>
