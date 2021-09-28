@@ -79,13 +79,13 @@ export default Ember.Component.extend({
       let pluginNameMap = nodes.reduce((memo, node) => {
         let pluginName = node.label.broccoliPluginName;
         memo[pluginName] = memo[pluginName] || { count: 0, time: 0 };
-        memo[pluginName].time += node._stats.time.plugin;
+        memo[pluginName].time += node._stats.time.self;
         memo[pluginName].count++;
         return memo;
       }, {});
 
       nodes = [];
-      
+
       for (let pluginName in pluginNameMap) {
         nodes.push({
           groupedByPluginName: true,
@@ -112,7 +112,7 @@ export default Ember.Component.extend({
     // off the label as the plugin name. If not, we need
     // to create a map of the plugin names and return that.
     let pluginNames = [];
-    
+
     if (nodes[0].groupedByPluginName === true) {
       pluginNames = nodes.map(node => node.label.name);
     } else {
@@ -132,11 +132,12 @@ export default Ember.Component.extend({
 
   sortedNodes: computed('nodes', 'sortDescending', function() {
     let sortDescending = this.get('sortDescending');
+    let field = this.get('groupByPluginName') ? 'plugin' : 'self';
     return this.get('nodes').sort((a, b) => {
       if (sortDescending) {
-        return b._stats.time.plugin - a._stats.time.plugin;
+        return b._stats.time[field] - a._stats.time[field];
       } else {
-        return a._stats.time.plugin - b._stats.time.plugin;
+        return a._stats.time[field] - b._stats.time[field];
       }
     });
   }).readOnly(),
@@ -145,7 +146,7 @@ export default Ember.Component.extend({
     let nodes = this.get('nodes');
 
     return nodes.reduce(function(previousValue, node){
-      return previousValue + node._stats.time.plugin;
+      return previousValue + node._stats.time.self;
     }, 0);
   }).readOnly(),
 
