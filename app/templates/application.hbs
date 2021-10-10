@@ -66,16 +66,18 @@
 {{else}}
   <section class="upload-data-banner hero is-fullheight is-light">
     <div class="hero-body">
-      <div class="container has-text-centered">
-        <a href="#" {{action (action (mut showUploadModal) true)}}>
-          <h1 class="title">
-            <i class="fa fa-exclamation-triangle"></i>
-          </h1>
-          <h2 class="subtitle">
-            Run <code>BROCCOLI_VIZ=1 ember build</code> and please upload data to begin your analysis.
-          </h2>
-        </a>
-      </div>
+      {{#drop-zone didDrop=(action "onFileDrop")}}
+        <div class="container has-text-centered">
+          <a href="#" {{action (action (mut showUploadModal) true)}}>
+            <h1 class="title">
+              <i class="fa fa-exclamation-triangle"></i>
+            </h1>
+            <h2 class="subtitle">
+              Run <code>BROCCOLI_VIZ=1 ember build</code> and please upload data to begin your analysis.
+            </h2>
+          </a>
+        </div>
+      {{/drop-zone}}
     </div>
   </section>
 {{/if}}

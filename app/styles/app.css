@@ -116,4 +116,21 @@ body > [class="ember-view"],
   font-weight: bold;
 }
 
+.drop-zone {
+  display: flex;
+  margin: 0 20px;
+  width: 100%;
+}
 
+.drop-zone > .content {
+  display: flex;
+  border: 2px dashed gray;
+  width: 100%;
+  min-height: 300px;
+  align-items: center;
+  padding: 20px;
+}
+
+.drop-zone.drop-zone--dropping {
+  background-color: #eee;
+}

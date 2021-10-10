@@ -1,23 +1,29 @@
 import Ember from 'ember';
-import fetch from "fetch";
+import fetch from 'fetch';
 
-const {
-  inject
-} = Ember;
+const { inject } = Ember;
 
 export default Ember.Controller.extend({
   graph: inject.service(),
 
+  _setGraphFromFile(file) {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      this.get('graph').setGraph(JSON.parse(e.target.result));
+      this.set('showUploadModal', false);
+    };
+
+    reader.readAsText(file);
+  },
+
   actions: {
     parseFile(event) {
-      let reader = new FileReader();
-      reader.onload = (e) => {
-        var contents = e.target.result;
-        this.get('graph').setGraph(JSON.parse(contents));
-        this.set('showUploadModal', false);
-      };
+      this._setGraphFromFile(event.target.files[0]);
+    },
 
-      reader.readAsText(event.target.files[0]);
+    onFileDrop(event) {
+      this._setGraphFromFile(event.dataTransfer.files[0]);
     },
 
     useSample(url) {
@@ -35,4 +41,4 @@ export default Ember.Controller.extend({
       this.get('graph').clearGraph();
     }
   }
-})
+});
