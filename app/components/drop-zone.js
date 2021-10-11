@@ -5,7 +5,7 @@ export default Component.extend({
   classNameBindings: ["dropping:drop-zone--dropping"],
   attributeBindings: ["draggable"],
 
-  dropping: true,
+  dropping: false,
   draggable: true,
 
   dragOver() {
