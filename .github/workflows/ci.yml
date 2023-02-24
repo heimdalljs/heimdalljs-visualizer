@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  NODE_VERSION: '12'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  deploy:
+    name: Deploy demo app
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '${{ env.NODE_VERSION }}'
+    - name: Install Dependencies
+      run: npm install
+    - name: Ember Build
+      run: ./node_modules/ember-cli/bin/ember build --silent --environment=production
+    - name: Deploy website
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist/
